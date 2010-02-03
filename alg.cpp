@@ -6,8 +6,8 @@
 //#include <ErrorTable.hpp>
 #include <iostream>
 #include <fstream>
-#include <string.h>
-#include <stdlib.h>
+#include <cstring>
+#include <cstdlib>
 
 
 const int ESUCCESS             = 0;
@@ -1070,8 +1070,7 @@ int intersection_l2l ( double* coordLine1, double* coordLine2, double* coordsOut
        (RELATION_EXTENDLINE==b1 && RELATION_EXTENDLINE==b2) )
     return RELATION_OVERLAP;
   else if ( (RELATION_INSIDE==b1 && RELATION_EXTENDLINE==b2) ||
-	    (RELATION_INSIDE==b2 && RELATION_EXTENDLINE==b1) )
-    //	    (RELATION_INSIDE==b2) && (RELATION_EXTENDLINE==b1) )
+	    (RELATION_INSIDE==b2) && (RELATION_EXTENDLINE==b1) )
     return RELATION_PARTOVERLAP;
 
   double d = (by*dx-bx*dy);

@@ -44,8 +44,9 @@ void sortbydist ( InputIterator1 begin, InputIterator1 end, InputIterator2 dest,
 
 // typedef unsigned __int32 uint32;
 // typedef unsigned __int64 uint64;
-typedef unsigned int uint32;
-typedef unsigned long long uint64;
+#include <inttypes.h>
+typedef uint32_t uint32;
+typedef uint64_t uint64;
 
 /*
  * @brief:  calculate circle using 3 point
@@ -70,6 +71,15 @@ double area3d (  double coord1[], double coord2[], double coord3[] );
  * @brief:  retrieve (x,y) is in (x1,y1), (x2,y2) 's left
  * @return: if in left, return true, otherwise return false
  */
+template < class Position >
+bool is_inleft ( Position pos, Position pos1, Position pos2 )
+{
+  Position::value_type sum = ( pos2.y() + pos1.y() ) * ( pos2.x() - pos1.x() );
+  sum += ( pos.y() + pos2.y() ) * ( pos.x() - pos2.x() );
+  sum += ( pos.y() + pos1.y() ) * ( pos1.x() - pos.x() );
+  return (sum < 0);
+}
+
 bool in_leftside( double x, double y, double x1, double y1, double x2, double y2 );
 bool in_leftside( double* , double*, double* );
 
@@ -153,6 +163,19 @@ int intersection_l2a ( double* coordsLine, double* coordsRect, double* coordsOut
 int intersection_tri2apara ( double* coordsTri, double* A, double* B, double* C, double* coordsOut, unsigned char& interFlag );
 int intersection_l2l ( double* coordLine1, double* coordLine2, double* coordsOut );
 int intersection_l2apara ( double* coordsLine, double* A, double* B, double* C, double* coordsOut );
+
+template < class vec >
+vec::value_type distance ( vec v1, vec v2 )
+{
+  return (v1 - v2).mod();
+}
+
+template < class vec, class Mod >
+vec::value_type distance ( vec v1, vec v2, Mod mod )
+{
+  return mod(v1 - v2);
+}
+
 double distance2d ( double x1, double y1, double x2, double y2 );
 double distance3d ( double x1, double y1, double z1, double x2, double y2, double z2 );
 double distance2dv ( double* coords1, double *coords2 );
@@ -173,3 +196,33 @@ void normalize(double*, double* );
 void generate_tricoords ( double* planePara, double* coord );
 void get_planetricoords ( double* planePara, double* c1, double* c2, double* c3, double* out );
 void get_genpara ( double* A, double* B, double* C, double* planePara );
+
+
+template < class InputIterator, class OutputIterator >
+void get_visiblepoints ( Position pos, InputIterator begin, InputIterator end, OutputIterator out )
+{
+  bool isBreak = false;
+  typename OutputIterator::container_type part1, part2;
+  for ( InputIterator pp1 = begin, pp=pp1++; pp1 != end; ++pp, ++pp1 ) {
+    if ( !in_leftside ( pos, *pp, *pp1 ) ) {
+      if ( isBreak )
+        part1.push_back ( *pp );
+      else
+	part2.push_back ( *pp );
+    } else
+      isBreak = true;
+  }
+
+  copy ( part1.begin(), part1.end(), out );
+  copy ( part2.begin(), part2.end(), out );
+}
+
+// void test ()
+// {
+//   distance ( 1, 2, abs );  
+//   distance ( 1.1, 2.2, fabs );
+//   vector2d v1, v2;
+//   distance ( v1, v2 );
+  
+// }
+
