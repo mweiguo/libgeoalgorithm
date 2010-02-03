@@ -2,6 +2,31 @@
 #include <vector>
 #include <list>
 
+/*
+ * @brief:  generate delaunay triangle net
+ * @para:   begin, end are iterator in [begin, end) form
+ * @return: InputIterator will be pushed into out parameter, in1a, int2a, in3a, in1b, int2b, int3b ...
+ */
+template < class InputIterator, class OutputIterator >
+void build_delaunay ( InputIterator begin, InputIterator end, OutputIterator out );
+
+template < class InputIterator, class OutputIterator >
+void build_convexhull ( InputIterator begin, InputIterator end, OutputIterator out );
+
+template < class InputIterator, class OutputIterator >
+void merge_convexhull ( InputIterator begin, const T& pnt, OutputIterator out );
+
+template< class InputIterator, class T, class OutputIterator >
+void get_visiblepoints ( InputIterator begin, InputIterator end, const T& pnt, OutputIterator result );
+
+/*
+ * @brief:  sort
+ * @para:   begin, end are iterator in [begin, end) form
+ * @return: InputIterator will be pushed into out parameter, InputIterator1, InputIterator1, ...
+ */
+template < class InputIterator, class InputIterator2, class Compare, class OutputIterator >
+void sortbydist ( InputIterator1 begin, InputIterator1 end, InputIterator2 dest, OutputIterator out, Compare comp );
+
 
 #define DIST_EXTEND	0.01
 // intersection flag
