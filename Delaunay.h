@@ -3,6 +3,8 @@
 #include <vector>
 #include <list>
 #include <map>
+#include "indexiter.h"
+
 
 using namespace std;
 
@@ -84,6 +86,28 @@ public:
 class dBManager
 {
 public:
+  typedef IndexIterator<dPoint> point_iterator;
+  typedef IndexIterator<dEdge> edge_iterator;
+  typedef IndexIterator<dTriangle> triangle_iterator;
+
+  static point_iterator point_begin() {
+    return point_iterator ( &mPoints, 0 );
+  }
+  static point_iterator point_end() {
+    return point_iterator ( &mPoints, mPoints.size() );
+  }
+  static edge_iterator edge_begin() {
+    return edge_iterator ( &mEdges, 0 );
+  }
+  static edge_iterator edge_end() {
+    return edge_iterator ( &mEdges, mEdges.size() );
+  }
+  static triangle_iterator triangle_begin() {
+    return triangle_iterator ( &mTris, 0 );
+  }
+  static triangle_iterator triangle_end() {
+    return triangle_iterator ( &mTris, mTris.size() );
+  }
   static int add_point ( double, double );
   static int add_point ( double* );
   static int add_edge ( int, int );
@@ -99,6 +123,7 @@ public:
   static std::vector<dEdge> mEdges;
   static std::vector<dTriangle> mTris;
 };
+
 
 class cDelaunay : private dBManager
 {
@@ -134,7 +159,8 @@ protected:
   bool GenDelaunay();
   bool merge_point ( int );
   void optimize ( int, int );
-private:
+protected:
+  // store vertex id
   vector<int> mvIndex;
   list<int> mOutline;
   struct Incr { int seed; Incr() : seed(0) {} int operator() () { return seed++; } };

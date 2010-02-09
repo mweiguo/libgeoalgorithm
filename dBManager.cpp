@@ -9,8 +9,8 @@ std::vector<dTriangle> dBManager::mTris;
 //------------------------------------------------------------------------------------------------------------------------
 int dBManager::add_point ( double x, double y )
 {
-  if ( mPoints.empty() )
-    mPoints.push_back ( dPoint(0, 0, 0 ) );
+  //   if ( mPoints.empty() )
+  //     mPoints.push_back ( dPoint(0, 0, 0 ) );
   mPoints.push_back ( dPoint(x, y, mPoints.size() ) );
   return mPoints.back().mID;
 }
@@ -18,8 +18,8 @@ int dBManager::add_point ( double x, double y )
 //------------------------------------------------------------------------------------------------------------------------
 int dBManager::add_point( double* c )
 {
-  if ( mPoints.empty() )
-    mPoints.push_back ( dPoint(c, 0 ) );
+  //   if ( mPoints.empty() )
+  //     mPoints.push_back ( dPoint(c, 0 ) );
   mPoints.push_back ( dPoint(c, mPoints.size() ) );
 	
   return mPoints.back().mID;
@@ -28,16 +28,16 @@ int dBManager::add_point( double* c )
 //------------------------------------------------------------------------------------------------------------------------
 int dBManager::add_edge ( int id1, int id2 )
 {
-	if ( mEdges.empty() )
-		mEdges.push_back ( dEdge( 0, 0, 0 ) ); // place holder
-	mEdges.push_back ( dEdge (id1, id2, mEdges.size()) );
-	return mEdges.back().mID;
+//   if ( mEdges.empty() )
+//     mEdges.push_back ( dEdge( 0, 0, 0 ) ); // place holder
+  mEdges.push_back ( dEdge (id1, id2, mEdges.size()) );
+  return mEdges.back().mID;
 }
 //------------------------------------------------------------------------------------------------------------------------
 int dBManager::add_triangle ( int id1, int id2, int id3 )
 {
-  if ( mTris.empty() )
-    mTris.push_back ( dTriangle( 0, 0, 0, 0 ) );  // place holder
+//   if ( mTris.empty() )
+//     mTris.push_back ( dTriangle( 0, 0, 0, 0 ) );  // place holder
 
   mTris.push_back ( dTriangle( id1, id2, id3, mTris.size() ) );
 

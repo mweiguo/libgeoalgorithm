@@ -1,7 +1,8 @@
 #pragma once
 #include <vector>
 #include <list>
-
+#include "vec.h"
+#include "mat.h"
 /*
  * @brief:  generate delaunay triangle net
  * @para:   begin, end are iterator in [begin, end) form
@@ -13,22 +14,22 @@ void build_delaunay ( InputIterator begin, InputIterator end, OutputIterator out
 template < class InputIterator, class OutputIterator >
 void build_convexhull ( InputIterator begin, InputIterator end, OutputIterator out );
 
-template < class InputIterator, class OutputIterator >
-void merge_convexhull ( InputIterator begin, const T& pnt, OutputIterator out );
+// template < class InputIterator, class OutputIterator >
+// void merge_convexhull ( InputIterator begin, const T& pnt, OutputIterator out );
 
-template< class InputIterator, class T, class OutputIterator >
-void get_visiblepoints ( InputIterator begin, InputIterator end, const T& pnt, OutputIterator result );
+// template < class InputIterator, class T, class OutputIterator >
+// void get_visiblepoints ( InputIterator begin, InputIterator end, const T& pnt, OutputIterator result );
 
-/*
- * @brief:  sort
- * @para:   begin, end are iterator in [begin, end) form
- * @return: InputIterator will be pushed into out parameter, InputIterator1, InputIterator1, ...
- */
-template < class InputIterator, class InputIterator2, class Compare, class OutputIterator >
-void sortbydist ( InputIterator1 begin, InputIterator1 end, InputIterator2 dest, OutputIterator out, Compare comp );
+// /*
+//  * @brief:  sort
+//  * @para:   begin, end are iterator in [begin, end) form
+//  * @return: InputIterator will be pushed into out parameter, InputIterator1, InputIterator1, ...
+//  */
+// template < class InputIterator, class InputIterator2, class Compare, class OutputIterator >
+// void sortbydist ( InputIterator1 begin, InputIterator1 end, InputIterator2 dest, OutputIterator out, Compare comp );
 
 
-#define DIST_EXTEND	0.01
+#define DIST_EXTEND     0.01
 // intersection flag
 #define CONSTRAINT_NONE 0
 #define CONSTRAINT_LINE 1
@@ -67,21 +68,20 @@ double area2d ( double coord1[], double coord2[], double coord3[] );
  */
 double area3d (  double coord1[], double coord2[], double coord3[] );
 
-/*
- * @brief:  retrieve (x,y) is in (x1,y1), (x2,y2) 's left
- * @return: if in left, return true, otherwise return false
+/**
+ * \brief 这个函数是用来判断在二维空间里一个点是否在另外两个点连线的左边
+ * \returns 如果在左边，返回 true, 否则返回 false
  */
-template < class Position >
-bool is_inleft ( Position pos, Position pos1, Position pos2 )
+template < class ValueType >
+bool is_leftside ( vec2<ValueType> pos, vec2<ValueType> pos1, vec2<ValueType> pos2 )
 {
-  Position::value_type sum = ( pos2.y() + pos1.y() ) * ( pos2.x() - pos1.x() );
-  sum += ( pos.y() + pos2.y() ) * ( pos.x() - pos2.x() );
-  sum += ( pos.y() + pos1.y() ) * ( pos1.x() - pos.x() );
-  return (sum < 0);
+  vec3<ValueType> v1 ( pos1 - pos );
+  vec3<ValueType> v2 ( pos2 - pos );
+  return v1.cross ( v2 ).z() > 0;
 }
 
-bool in_leftside( double x, double y, double x1, double y1, double x2, double y2 );
-bool in_leftside( double* , double*, double* );
+bool in_leftside ( double x, double y, double x1, double y1, double x2, double y2 );
+bool in_leftside ( double* , double*, double* );
 
 
 /*
@@ -94,8 +94,8 @@ bool in_leftside( double* , double*, double* );
  *          RELATION_INTERSECTION
  */
 int intersection_ltol2d ( double x1, double y1, double x2, double y2, 
-			  double x3, double y3, double x4, double y4,
-			  double &x, double &y );
+                          double x3, double y3, double x4, double y4,
+                          double &x, double &y );
 
 /*
  * @brief:  calculate corner angle between (x1,y1)-(x2,y2) and (x2,y2)-(x3,y3)
@@ -112,7 +112,7 @@ double corner_angle3d ( double* c1, double* c, double* c2 );
  * @brief:  return two edge has same direction ( angle < 90 )
  */
 bool same_direction ( double x1, double y1, double x2, double y2, 
-		      double xx1, double yy1, double xx2, double yy2 );
+                      double xx1, double yy1, double xx2, double yy2 );
 
 // graph object's topology
 const int RELATION_OVERLAP      = 1000;
@@ -141,9 +141,9 @@ void matrix_transpose ( double m[], int num );
 void point3d_transform ( double* coord, double* m, double* out );
 void point3d_transform ( double x, double y, double z, double* m, double& ox, double& oy, double& oz);
 void get_matrixs ( double coord1[], double coord2[], double coord3[],
-		   double offset[], double rotz[],
-		   double roty[], double rotx[], 
-		   double ext1[], double ext2[] );
+                   double offset[], double rotz[],
+                   double roty[], double rotx[], 
+                   double ext1[], double ext2[] );
 void get_matrix( double coord1[], double coord2[], double coord3[], double matrix[] );
 //////////////////////////////////////////////////////////////// matrix operation end
 
@@ -165,13 +165,13 @@ int intersection_l2l ( double* coordLine1, double* coordLine2, double* coordsOut
 int intersection_l2apara ( double* coordsLine, double* A, double* B, double* C, double* coordsOut );
 
 template < class vec >
-vec::value_type distance ( vec v1, vec v2 )
+typename vec::value_type distance ( vec v1, vec v2 )
 {
   return (v1 - v2).mod();
 }
 
 template < class vec, class Mod >
-vec::value_type distance ( vec v1, vec v2, Mod mod )
+typename vec::value_type distance ( vec v1, vec v2, Mod mod )
 {
   return mod(v1 - v2);
 }
@@ -198,31 +198,45 @@ void get_planetricoords ( double* planePara, double* c1, double* c2, double* c3,
 void get_genpara ( double* A, double* B, double* C, double* planePara );
 
 
-template < class InputIterator, class OutputIterator >
-void get_visiblepoints ( Position pos, InputIterator begin, InputIterator end, OutputIterator out )
+template < class Vec2, class InputIterator, class OutputIterator >
+void get_visiblepoints ( Vec2 pos, InputIterator begin, InputIterator end, OutputIterator out )
 {
   bool isBreak = false;
   typename OutputIterator::container_type part1, part2;
-  for ( InputIterator pp1 = begin, pp=pp1++; pp1 != end; ++pp, ++pp1 ) {
-    if ( !in_leftside ( pos, *pp, *pp1 ) ) {
-      if ( isBreak )
-        part1.push_back ( *pp );
-      else
-	part2.push_back ( *pp );
+  // the 'head to tail' part
+  InputIterator pp1 = begin, pp=pp1++;
+  for ( ; pp1 != end; ++pp, ++pp1 ) {
+    if ( !is_leftside ( pos, *pp, *pp1 ) ) {
+      if ( isBreak ) {
+        if ( part1.empty() )
+          part1.push_back ( pp );
+        part1.push_back ( pp1 );
+      } else {
+        if ( part2.empty() )
+          part2.push_back ( pp );
+        part2.push_back ( pp1 );
+      }
     } else
       isBreak = true;
   }
 
-  copy ( part1.begin(), part1.end(), out );
+  // the 'tail to head' part
+  if ( !is_leftside ( pos, *pp, *begin ) ) {
+    if ( isBreak ) {
+      if ( part1.empty() )
+	part1.push_back ( pp );
+      part1.push_back ( begin );
+    } else {
+      if ( part2.empty() )
+	part2.push_back ( pp );
+      part2.push_back ( begin );
+    }
+  }
+
+  // remove duplicate value
+  if ( !part1.empty() && !part2.empty() && part1.back().index() == part2.front().index() ) 
+    copy ( part1.begin(), part1.end()-1, out );
+  else
+    copy ( part1.begin(), part1.end(), out );
   copy ( part2.begin(), part2.end(), out );
 }
-
-// void test ()
-// {
-//   distance ( 1, 2, abs );  
-//   distance ( 1.1, 2.2, fabs );
-//   vector2d v1, v2;
-//   distance ( v1, v2 );
-  
-// }
-

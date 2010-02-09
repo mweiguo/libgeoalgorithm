@@ -2,7 +2,7 @@
 #include <stdexcept>
 #include <stdlib.h>
 
-#include "../alg/alg.hpp"
+#include "alg.hpp"
 //-------------------------------------------------------------------------------------------------------------
 dTriangle::dTriangle ( int e1, int e2, int e3, int id ) : mID (id)
 {
