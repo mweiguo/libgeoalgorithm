@@ -27,9 +27,9 @@ public:
   void yx( vec2 v ) { _x = v._y; _y = v._x; }
 public:
   reference normal ();
-  void mod ( value_type length );
+  self mod ( value_type length );
   value_type mod ();
-  self operator - ( vec2::const_reference rhs );
+  self operator - ( const_reference rhs );
   reference operator *= ( value_type rhs );
 protected:
   value_type _x, _y;
@@ -98,10 +98,11 @@ inline typename vec2<ValueType>::reference vec2<ValueType>::normal ()
 }
 
 template < class ValueType >
-inline void vec2<ValueType>::mod ( ValueType length ) 
+inline vec2<ValueType> vec2<ValueType>::mod ( ValueType length ) 
 { 
   normal();
   *this *= length;
+  return *this;
 }
 
 template < class ValueType >
@@ -111,7 +112,7 @@ inline ValueType vec2<ValueType>::mod ()
 }
 
 template < class ValueType >
-inline typename vec2<ValueType>::self vec2<ValueType>::operator - ( vec2<ValueType>::const_reference rhs )
+inline vec2<ValueType> vec2<ValueType>::operator - ( typename vec2<ValueType>::const_reference rhs )
 {
   return vec2 ( _x - rhs._x,  _y - rhs._y ); 
 }
