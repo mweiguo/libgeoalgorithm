@@ -1,21 +1,19 @@
 CC=g++
 LD=g++
 TARGET=a.exe
-SOURCES = Delaunay.cpp dBManager.cpp dEdge.cpp dTriangle.cpp delaunayManager.cpp main.cpp ../alg/alg.cpp ../../tinylog/src/tinyLog.cpp
-#SOURCES = test.cpp
+SOURCES = Delaunay.cpp dBManager.cpp dEdge.cpp dTriangle.cpp delaunayManager.cpp main.cpp alg.cpp ../../tinylog/src/tinyLog.cpp
 OBJECTS := $(SOURCES:%.cpp=%.o)
-INCL=-I../alg/ -I../exception -I../../tinylog/src
-CFLAGS=-c -Os -fno-rtti -Wall
-#CFLAGS=-c $(INCL)
+INCL=-I../alg/ -I../../exception -I../../tinylog/src
+LIB=-L. -ltinylog
+CFLAGS=-c -g -Os -fno-rtti -Wall
 LFLAGS=
 APPLIBS=
-#SYSLIBS=-lopengl32 -lglut32 -lglu32
 
 all: $(TARGET)
 
 #  Make target
 $(TARGET): $(OBJECTS) $(APPLIBS)
-	$(LD) $(LFLAGS) -o $(TARGET) $(OBJECTS) $(APPLIBS) $(SYSLIBS)
+	$(LD) $(LFLAGS) -o $(TARGET) $(OBJECTS) $(APPLIBS) $(SYSLIBS) tinylog.a
 
 #  Make objects
 %.o: %.cpp
