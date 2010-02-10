@@ -13,7 +13,8 @@ public:
   typedef const vec2 const_reference;
 public:
   // constructor
-  vec2 ( const vec2& v ) { _x = v._x; _y = v._y; }
+  template< class Vec >
+  vec2 ( const Vec& v ) { _x = v.x(); _y = v.y(); }
   vec2 ( value_type* v ) { _x = v[0]; _y = v[1]; }
   vec2 ( value_type x1, value_type y1 ) : _x(x1), _y(y1) {}
   // getter & setter
@@ -33,11 +34,13 @@ public:
   self mod ( value_type length );
   value_type mod ();
   self operator - ( const_reference rhs );
-  reference operator *= ( value_type rhs );
+  reference operator *= ( value_type rhs ); 
+  vec2 operator = ( const vec2& rhs );
+  vec2 operator + ( const vec2& rhs );
+
 protected:
   value_type _x, _y;
 };
-
 
 template < class ValueType >
 class vec3 : public vec2<ValueType>
@@ -91,8 +94,11 @@ template < class ValueType >
 inline typename vec2<ValueType>::reference vec2<ValueType>::normal () 
 { 
   typename vec2<ValueType>::value_type m = mod (); 
-  _x /= m; 
-  _y /= m; 
+  if ( m != 0 )
+  {
+	  _x /= m; 
+	  _y /= m; 
+  }
   return *this;
 }
 
@@ -107,7 +113,7 @@ inline vec2<ValueType> vec2<ValueType>::mod ( ValueType length )
 template < class ValueType >
 inline ValueType vec2<ValueType>::mod ()
 {
-  return sqrt(_x*_x + _y*_y); 
+  return sqrt((double)(_x*_x + _y*_y)); 
 }
 
 template < class ValueType >
@@ -124,13 +130,28 @@ inline typename vec2<ValueType>::reference vec2<ValueType>::operator *= ( ValueT
   return *this;
 }
 
+template < class ValueType >
+inline vec2<ValueType> vec2<ValueType>::operator = ( const vec2<ValueType>& rhs )
+{
+	x ( rhs.x() );
+	y ( rhs.y() );
+	return *this;
+}
+
+template < class ValueType >
+inline vec2<ValueType> vec2<ValueType>::operator + ( const vec2<ValueType>& rhs )
+{
+	x ( x() + rhs.x() );
+	y ( y() + rhs.y() );
+	return *this;
+}
 
 // vec3
 template < class ValueType >
 inline ValueType vec3<ValueType>::mod ()
 { 
   typedef vec2<ValueType> vec2t;
-  return sqrt(vec2t::x() * vec2t::x() + vec2t::y() * vec2t::y() ); 
+  return sqrt((double)(vec2t::x() * vec2t::x() + vec2t::y() * vec2t::y()) ); 
 }
 
 template < class ValueType >
