@@ -1,4 +1,6 @@
-#pragma once
+#ifndef _MAT2_H_
+#define _MAT2_H_
+
 #define _USE_MATH_DEFINES
 #include <math.h>
 template < class ValueType >
@@ -62,3 +64,4 @@ inline mat2<ValueType> mat2<ValueType>::operator* ( const_reference rhs )
 //   return Vec ( t, t1 );
 
 // }
+#endif
