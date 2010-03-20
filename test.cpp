@@ -1,7 +1,7 @@
-#include "vec.h"
+#include "vec3.h"
 #include "mat.h"
 #include "vec_unittest.h"
-#include "alg_unittest.h"
+//#include "alg_unittest.h"
 #include <iostream>
 #include <tinylog.h>
 
@@ -12,7 +12,7 @@ int main ()
 {
   try {
     vec3Test v3test ( 1, 2, 0);
-    algTest algtest;  
+    //    algTest algtest;  
   } catch ( exception& e ) {
     LOG_INFO ( "%s", e.what() );
   }

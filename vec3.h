@@ -24,7 +24,11 @@ public:
   vec3 xzx() const               { return vec3(_v[0], _v[2], _v[0]); }
   vec3 xzy() const               { return vec3(_v[0], _v[2], _v[1]); }
   vec3 xzz() const               { return vec3(_v[0], _v[2], _v[2]); }
+  vec2<ValueType> xx() const     { return vec2<ValueType>(_v[0], _v[0]); }
+  vec2<ValueType> xy() const     { return vec2<ValueType>(_v[0], _v[1]); }
   vec2<ValueType> xz() const     { return vec2<ValueType>(_v[0], _v[2]); }
+  vec2<ValueType> yx() const     { return vec2<ValueType>(_v[1], _v[0]); }
+  vec2<ValueType> yy() const     { return vec2<ValueType>(_v[1], _v[1]); }
   vec2<ValueType> yz() const     { return vec2<ValueType>(_v[1], _v[2]); }
   vec2<ValueType> zx() const     { return vec2<ValueType>(_v[2], _v[0]); }
   vec2<ValueType> zy() const     { return vec2<ValueType>(_v[2], _v[1]); }
@@ -48,7 +52,8 @@ public:
 public:
   value_type mod ();
   vec3 operator - ( const_reference rhs );
-  value_type& operator[] ()       { return _v[3]; }
+  value_type& operator[] (int idx)       { return _v[idx]; }
+  value_type operator[] (int idx) const  { return _v[idx]; }
   vec3 cross ( const_reference rhs );
 public:
   value_type _v[3];
@@ -59,23 +64,23 @@ template < class ValueType >
 inline ValueType vec3<ValueType>::mod ()
 { 
   typedef vec2<ValueType> vec2t;
-  return sqrt((double)(vec2t::x() * vec2t::x() + vec2t::y() * vec2t::y()) ); 
+  return sqrt((double)(x() * x() + y() * y()) ); 
 }
 
 template < class ValueType >
 inline vec3<ValueType> vec3<ValueType>::operator - ( const vec3<ValueType>& rhs )
 { 
   typedef vec2<ValueType> vec2t;
-  return vec3<ValueType> ( vec2t::x() - rhs.x(),  vec2t::y() - rhs.y(), z() - rhs.z() ); 
+  return vec3<ValueType> ( x() - rhs.x(),  y() - rhs.y(), z() - rhs.z() ); 
 }
 
 template < class ValueType >
 inline vec3<ValueType> vec3<ValueType>::cross ( const vec3<ValueType>& rhs )
 {
   typedef vec2<ValueType> vec2t;
-  return vec3<ValueType> ( vec2t::y() * rhs.z() - rhs.y() * z(), 
-		z() * rhs.x() - vec2t::x() * rhs.z(),
-		vec2t::x() * rhs.y() - rhs.x() * vec2t::y() );
+  return vec3<ValueType> ( y() * rhs.z() - rhs.y() * z(), 
+		z() * rhs.x() - x() * rhs.z(),
+		x() * rhs.y() - rhs.x() * y() );
 } 
 
 #endif
