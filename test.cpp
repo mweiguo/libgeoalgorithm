@@ -1,6 +1,6 @@
 #include "vec3.h"
 #include "mat.h"
-#include "vec_unittest.h"
+#include "unittest_vec.h"
 //#include "alg_unittest.h"
 #include <iostream>
 #include <tinylog.h>
