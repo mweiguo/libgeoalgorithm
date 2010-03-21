@@ -1,7 +1,7 @@
 CC=g++
 LD=g++
 TARGET=a.exe
-SOURCES = test.cpp unittest_vec.h
+SOURCES = test.cpp kdtree.cpp unittest_vec.h
 OBJECTS := $(SOURCES:%.cpp=%.o)
 INCL=-I../alg/ -I../exception -I../../tinylog/src
 CFLAGS=-c -Os -fno-rtti -Wall
