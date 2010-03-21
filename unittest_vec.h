@@ -14,7 +14,9 @@ public:
   vec3Test (float x1, float y1, float z1) : vec3f(x1,y1,z1)
   {
     modTest ();
+    addTest ();
     subTest ();
+    divTest ();
     crossTest();
     getterTest();
   }
@@ -23,12 +25,27 @@ public:
     if ( sqrt(x() * x() + y() * y() + z() * z()) != mod() )
       throw logic_error ( "modTest failed" );
   }
+  void addTest ()
+  {
+    vec3f t ( 1, 2, 3 );
+    vec3f t2( 4, 5, 6 );
+    vec3f t1 = t + t2;
+    if ( t1.x() != 5 || t1.y() != 7 || t1.z() != 9 )
+      throw logic_error ( "addTest failed" );
+  }
   void subTest ()
   {
     vec3f t ( x()+1, y()+1, z()+1 );
     vec3f t1 = t - *this;
     if ( t1.x() != 1 || t1.y() != 1 || t1.z() != 1 )
       throw logic_error ( "subTest failed" );
+  }
+  void divTest ()
+  {
+    vec3f t ( 2, 3, 4 );
+    vec3f t1 = t / 2;
+    if ( t1.x() != 1 || t1.y() != 1.5 || t1.z() != 2 )
+      throw logic_error ( "divTest failed" );
   }
   void crossTest()
   {
