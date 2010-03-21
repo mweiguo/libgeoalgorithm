@@ -13,7 +13,7 @@ public:
   // constructor
   vec3 ( const vec2<ValueType> v2 ) { _v[0]=v2[0]; _v[1]=v2[1]; _v[2]=0; }
   vec3 ( value_type* v ) { _v[0] = v[0]; _v[1] = v[1]; _v[2] = v[2]; }
-  vec3 ( value_type x1, value_type y1, value_type z1 ) { _v[0] = x1; _v[1] = y1; _v[2] = z1; }
+  vec3 ( value_type x1=0, value_type y1=0, value_type z1=0 ) { _v[0] = x1; _v[1] = y1; _v[2] = z1; }
   // getter & setter
   vec3 xxx() const               { return vec3(_v[0], _v[0], _v[0]); }
   vec3 xxy() const               { return vec3(_v[0], _v[0], _v[1]); }
@@ -36,25 +36,30 @@ public:
   value_type x() const           { return _v[0]; }
   value_type y() const           { return _v[1]; }
   value_type z() const           { return _v[2]; }
-  void xyz( vec3 v )             { _v[0] = v[0]; _v[1] = v[1]; _v[2] = v[2]; }
-  void xzy( vec3 v )             { _v[0] = v[0]; _v[1] = v[2]; _v[2] = v[1]; }
-  void yxz( vec3 v )             { _v[0] = v[1]; _v[1] = v[0]; _v[2] = v[2]; }
-  void yzx( vec3 v )             { _v[0] = v[1]; _v[1] = v[2]; _v[2] = v[0]; }
-  void zxy( vec3 v )             { _v[0] = v[2]; _v[1] = v[0]; _v[2] = v[1]; }
-  void zyx( vec3 v )             { _v[0] = v[2]; _v[1] = v[1]; _v[2] = v[0]; }
-  void xz( vec2<ValueType> v )   { _v[0] = v[0]; _v[2] = v[2]; }
-  void yz( vec2<ValueType> v )   { _v[1] = v[1]; _v[2] = v[2]; }
-  void zx( vec2<ValueType> v )   { _v[2] = v[2]; _v[0] = v[0]; }
-  void zy( vec2<ValueType> v )   { _v[2] = v[2]; _v[1] = v[1]; }
+  void xyz( ValueType v0, ValueType v1, ValueType v2 ) { _v[0] = v0; _v[1] = v1; _v[2] = v2; }
+  void xzy( ValueType v0, ValueType v1, ValueType v2 ) { _v[0] = v0; _v[2] = v1; _v[1] = v2; }
+  void yxz( ValueType v0, ValueType v1, ValueType v2 ) { _v[1] = v0; _v[0] = v1; _v[2] = v2; }
+  void yzx( ValueType v0, ValueType v1, ValueType v2 ) { _v[1] = v0; _v[2] = v1; _v[0] = v2; }
+  void zxy( ValueType v0, ValueType v1, ValueType v2 ) { _v[2] = v0; _v[0] = v1; _v[1] = v2; }
+  void zyx( ValueType v0, ValueType v1, ValueType v2 ) { _v[2] = v0; _v[1] = v1; _v[0] = v2; }
+  void xz( ValueType v0, ValueType v1 )   { _v[0] = v0; _v[2] = v1; }
+  void yz( ValueType v0, ValueType v1 )   { _v[1] = v0; _v[2] = v1; }
+  void zx( ValueType v0, ValueType v1 )   { _v[2] = v0; _v[0] = v1; }
+  void zy( ValueType v0, ValueType v1 )   { _v[2] = v0; _v[1] = v1; }
   void x( value_type v )         { _v[0] = v; }
   void y( value_type v )         { _v[1] = v; }
   void z( value_type v )         { _v[2] = v; }
 public:
   value_type mod ();
+  vec3 operator = ( const_reference rhs );
+  vec3 operator + ( const_reference rhs );
   vec3 operator - ( const_reference rhs );
+  vec3 operator / ( double rhs );
   value_type& operator[] (int idx)       { return _v[idx]; }
   value_type operator[] (int idx) const  { return _v[idx]; }
   vec3 cross ( const_reference rhs );
+  vec3 min ( const_reference rhs );
+  vec3 max ( const_reference rhs );
 public:
   value_type _v[3];
 };
@@ -63,24 +68,56 @@ public:
 template < class ValueType >
 inline ValueType vec3<ValueType>::mod ()
 { 
-  typedef vec2<ValueType> vec2t;
   return sqrt((double)(x() * x() + y() * y()) ); 
+}
+
+template < class ValueType >
+inline vec3<ValueType> vec3<ValueType>::operator = ( const vec3<ValueType>& rhs )
+{ 
+  xyz ( rhs.x(), rhs.y(), rhs.z() );
+  return *this;
+}
+
+template < class ValueType >
+inline vec3<ValueType> vec3<ValueType>::operator + ( const vec3<ValueType>& rhs )
+{ 
+  return vec3<ValueType> ( x() + rhs.x(),  y() + rhs.y(), z() + rhs.z() ); 
 }
 
 template < class ValueType >
 inline vec3<ValueType> vec3<ValueType>::operator - ( const vec3<ValueType>& rhs )
 { 
-  typedef vec2<ValueType> vec2t;
   return vec3<ValueType> ( x() - rhs.x(),  y() - rhs.y(), z() - rhs.z() ); 
+}
+
+template < class ValueType >
+inline vec3<ValueType> vec3<ValueType>::operator / ( double rhs )
+{ 
+  return vec3<ValueType> ( x() / rhs,  y() / rhs, z() / rhs ); 
 }
 
 template < class ValueType >
 inline vec3<ValueType> vec3<ValueType>::cross ( const vec3<ValueType>& rhs )
 {
-  typedef vec2<ValueType> vec2t;
   return vec3<ValueType> ( y() * rhs.z() - rhs.y() * z(), 
 		z() * rhs.x() - x() * rhs.z(),
 		x() * rhs.y() - rhs.x() * y() );
+} 
+
+template < class ValueType >
+inline vec3<ValueType> vec3<ValueType>::min ( const vec3<ValueType>& rhs )
+{
+  return vec3<ValueType> ( x() < rhs.x() ? x() : rhs.x(),
+			   y() < rhs.y() ? y() : rhs.y(),
+			   z() < rhs.z() ? z() : rhs.z() );
+} 
+
+template < class ValueType >
+inline vec3<ValueType> vec3<ValueType>::max ( const vec3<ValueType>& rhs )
+{
+  return vec3<ValueType> ( x() > rhs.x() ? x() : rhs.x(),
+			   y() > rhs.y() ? y() : rhs.y(),
+			   z() > rhs.z() ? z() : rhs.z() );
 } 
 
 #endif
