@@ -11,7 +11,8 @@ public:
   typedef const vec3& const_reference;
 public:
   // constructor
-  vec3 ( const vec2<ValueType> v2 ) { _v[0]=v2[0]; _v[1]=v2[1]; _v[2]=0; }
+  vec3 ( const vec2<ValueType>& v2 ) { _v[0]=v2[0]; _v[1]=v2[1]; _v[2]=0; }
+  vec3 ( const vec3<ValueType>& v3 ) { _v[0]=v3[0]; _v[1]=v3[1]; _v[2]=v3[2]; }
   vec3 ( value_type* v ) { _v[0] = v[0]; _v[1] = v[1]; _v[2] = v[2]; }
   vec3 ( value_type x1=0, value_type y1=0, value_type z1=0 ) { _v[0] = x1; _v[1] = y1; _v[2] = z1; }
   // getter & setter
