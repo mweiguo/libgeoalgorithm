@@ -52,15 +52,17 @@ public:
   void z( value_type v )         { _v[2] = v; }
 public:
   value_type mod ();
+  bool operator < ( const_reference rhs );
+  bool operator > ( const_reference rhs );
   vec3 operator = ( const_reference rhs );
   vec3 operator + ( const_reference rhs );
-  vec3 operator - ( const_reference rhs );
+  vec3 operator - ( const_reference rhs ) const;
   vec3 operator / ( double rhs );
   value_type& operator[] (int idx)       { return _v[idx]; }
   value_type operator[] (int idx) const  { return _v[idx]; }
   vec3 cross ( const_reference rhs );
-  vec3 min ( const_reference rhs );
-  vec3 max ( const_reference rhs );
+  vec3 min ( const_reference rhs ) const;
+  vec3 max ( const_reference rhs ) const;
 public:
   value_type _v[3];
 };
@@ -70,6 +72,18 @@ template < class ValueType >
 inline ValueType vec3<ValueType>::mod ()
 { 
   return sqrt((double)(x() * x() + y() * y()) ); 
+}
+
+template < class ValueType >
+inline bool vec3<ValueType>::operator < ( const vec3<ValueType>& rhs )
+{ 
+  return ( (x() < rhs.x()) && (y()<rhs.y()) && (z()<rhs.z()) );
+}
+
+template < class ValueType >
+inline bool vec3<ValueType>::operator > ( const vec3<ValueType>& rhs )
+{ 
+  return ( (x()>rhs.x()) && (y()>rhs.y()) && (z()>rhs.z()) );
 }
 
 template < class ValueType >
@@ -86,7 +100,7 @@ inline vec3<ValueType> vec3<ValueType>::operator + ( const vec3<ValueType>& rhs 
 }
 
 template < class ValueType >
-inline vec3<ValueType> vec3<ValueType>::operator - ( const vec3<ValueType>& rhs )
+inline vec3<ValueType> vec3<ValueType>::operator - ( const vec3<ValueType>& rhs ) const
 { 
   return vec3<ValueType> ( x() - rhs.x(),  y() - rhs.y(), z() - rhs.z() ); 
 }
@@ -106,7 +120,7 @@ inline vec3<ValueType> vec3<ValueType>::cross ( const vec3<ValueType>& rhs )
 } 
 
 template < class ValueType >
-inline vec3<ValueType> vec3<ValueType>::min ( const vec3<ValueType>& rhs )
+inline vec3<ValueType> vec3<ValueType>::min ( const vec3<ValueType>& rhs ) const
 {
   return vec3<ValueType> ( x() < rhs.x() ? x() : rhs.x(),
 			   y() < rhs.y() ? y() : rhs.y(),
@@ -114,11 +128,15 @@ inline vec3<ValueType> vec3<ValueType>::min ( const vec3<ValueType>& rhs )
 } 
 
 template < class ValueType >
-inline vec3<ValueType> vec3<ValueType>::max ( const vec3<ValueType>& rhs )
+inline vec3<ValueType> vec3<ValueType>::max ( const vec3<ValueType>& rhs ) const
 {
   return vec3<ValueType> ( x() > rhs.x() ? x() : rhs.x(),
 			   y() > rhs.y() ? y() : rhs.y(),
 			   z() > rhs.z() ? z() : rhs.z() );
-} 
+}
+
+typedef vec3<float> vec3f;
+typedef vec3<int> vec3i;
+typedef vec3<double> vec3d;
 
 #endif
