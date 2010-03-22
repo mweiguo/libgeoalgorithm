@@ -1,17 +1,22 @@
-#include "kdtree.h"
 #include <algorithm>
+#include <tinylog.h>
 using namespace std;
 
-template<class ObjectType, class InputIterator>
-int BuildKdTree<ObjectType,InputIterator>::targetnumperleaf = 16;
-template<class ObjectType, class InputIterator>
-int BuildKdTree<ObjectType,InputIterator>::maxlevel = 16;
+template<class ObjectType>
+int BuildKdTree<ObjectType>::targetnumperleaf = 16;
 
+template<class ObjectType>
+int BuildKdTree<ObjectType>::maxlevel = 16;
+
+// #include "drawablenode.h"
 template<class ObjType>
-BBox getBBox ( ObjType& obj )
+struct getBBCenter
 {
-  return obj.bbox();
-}
+  vec3f operator() (ObjType node )
+  {
+    return node->getBBox().center();
+  }
+};
 
 class Incr
 {
@@ -22,26 +27,112 @@ private:
   int seed;
 };
 
-template<class ObjectType, class InputIterator>
-BuildKdTree<ObjectType,InputIterator>::BuildKdTree ( 
-	    KdTree<ObjectType>& kdtree, 
-	    InputIterator begin, 
-	    InputIterator end, 
-	    const BBox& bb ) 
+template<class ObjectType>
+BuildKdTree<ObjectType>::BuildKdTree ( KdTree<ObjectType>& kdtree, const BBox& bb ) 
   : _kdtree(kdtree)
 {
   computeDivision (bb);
 
-  _kdtree._objs.assign ( begin, end );
+#ifdef _DEBUG_OUTPUT_
+  LOG_DEBUG ( "begin settting up _objindices ... " );
+#endif
   generate_n ( back_inserter(_objindices), _kdtree._objs.size(), Incr() );
-  transform ( begin, end, back_inserter(_objcenters), getBBox );
+#ifdef _DEBUG_OUTPUT_
+  LOG_DEBUG ( "ok" );
+#endif
 
+#ifdef _DEBUG_OUTPUT_
+  LOG_DEBUG ( "begin setting up _objcenters ... " );
+#endif
+  transform ( _kdtree._objs.begin(), _kdtree._objs.end(), back_inserter(_objcenters), getBBCenter<ObjectType>() );
+#ifdef _DEBUG_OUTPUT_
+  LOG_DEBUG ( "ok" );
+#endif
+
+  int root = _kdtree.addNode ( -1, _kdtree._objs.size() );
+
+#ifdef _DEBUG_OUTPUT_
+  LOG_DEBUG ( "begin divide ... " );
+#endif
   divide ();
+#ifdef _DEBUG_OUTPUT_
+  LOG_DEBUG ( "ok" );
+#endif
+
+
+  // set kdtree's objs in sorted order
+#ifdef _DEBUG_OUTPUT_
+  LOG_DEBUG ( "begin sort the primitive's order ... " );
+#endif
+  vector<ObjectType> objs ( _kdtree._objs.size() );
+  for ( int i=0; i<_objindices.size(); i++ )
+    objs[i] = _kdtree._objs[_objindices[i]];
+  _kdtree._objs.swap ( objs );
+#ifdef _DEBUG_OUTPUT_
+  LOG_DEBUG ( "ok" );
+#endif
+
+  _kdtree.dump ( root, 0 );
 }
 
-template<class ObjectType, class InputIterator>
-void BuildKdTree<ObjectType,InputIterator>::computeDivision(const BBox& bb )
+template<class ObjectType>
+template<class InputIterator>
+BuildKdTree<ObjectType>::BuildKdTree ( KdTree<ObjectType>& kdtree, 
+				       InputIterator begin, 
+				       InputIterator end, 
+				       const BBox& bb ) 
+  : _kdtree(kdtree)
 {
+  computeDivision (bb);
+
+#ifdef _DEBUG_OUTPUT_
+  LOG_DEBUG ( "begin settting up _objindices ... " );
+#endif
+  _kdtree._objs.assign ( begin, end );
+  generate_n ( back_inserter(_objindices), _kdtree._objs.size(), Incr() );
+#ifdef _DEBUG_OUTPUT_
+  LOG_DEBUG ( "ok" );
+#endif
+
+#ifdef _DEBUG_OUTPUT_
+  LOG_DEBUG ( "begin setting up _objcenters ... " );
+#endif
+  transform ( _kdtree._objs.begin(), _kdtree._objs.end(), back_inserter(_objcenters), getBBCenter<ObjectType>() );
+#ifdef _DEBUG_OUTPUT_
+  LOG_DEBUG ( "ok" );
+#endif
+
+  int root = _kdtree.addNode ( -1, _kdtree._objs.size() );
+
+#ifdef _DEBUG_OUTPUT_
+  LOG_DEBUG ( "begin divide ... " );
+#endif
+  divide ();
+#ifdef _DEBUG_OUTPUT_
+  LOG_DEBUG ( "ok" );
+#endif
+
+#ifdef _DEBUG_OUTPUT_
+  LOG_DEBUG ( "begin sort primitive's order ... " );
+#endif
+  // set kdtree's objs in sorted order
+  vector<ObjectType> objs ( _kdtree._objs.size() );
+  for ( int i=0; i<_objindices.size(); i++ )
+    objs[i] = _kdtree._objs[_objindices[i]];
+  _kdtree._objs.swap ( objs );
+#ifdef _DEBUG_OUTPUT_
+  LOG_DEBUG ( "ok" );
+#endif
+
+  _kdtree.dump ( root, 0 );
+}
+
+template<class ObjectType>
+void BuildKdTree<ObjectType>::computeDivision(const BBox& bb )
+{
+#ifdef _DEBUG_OUTPUT_
+  LOG_DEBUG ( "begin computeDivision ... " );
+#endif
   vec3f dimension;
   dimension = bb.max() - bb.min();
   
@@ -53,30 +144,38 @@ void BuildKdTree<ObjectType,InputIterator>::computeDivision(const BBox& bb )
     // 1 == divide y
     // 2 == divide z
     if (dimension[0]>=dimension[1]) {
-	if (dimension[0]>=dimension[2]) axis = 0;
-	else axis = 2;
+      if (dimension[0]>=dimension[2]) axis = 0;
+      else axis = 2;
     } else if (dimension[1]>=dimension[2]) axis = 1;
     else axis = 2;
 
-    dimension[axis] /= 2.0f;
 
     _axisstack.push_back ( axis );
+
+    LOG_DEBUG ( "level=%d\taxis=%d\tdimension=(%f, %f, %f)", level, axis, dimension[0], dimension[1], dimension[2] );
+
+    dimension[axis] /= 2.0f;
+    ++level;
   }
+
+#ifdef _DEBUG_OUTPUT_
+  LOG_DEBUG ( "ok" );
+#endif
 }
 
 //[istart, iend)
-template<class ObjectType, class InputIterator>
-BBox BuildKdTree<ObjectType,InputIterator>::getBBox ( int istart, int iend )
+template<class ObjectType>
+BBox BuildKdTree<ObjectType>::getBBox ( int istart, int iend )
 {
   BBox box;
   for ( int i=istart; i!=iend; i++ )
-    box.unionbox ( _kdtree._objs[_objindices[i]].getBBox() );
+    box.unionbox ( _kdtree._objs[_objindices[i]]->getBBox() );
   return box;
 }
 
 //[istart, iend)
-template<class ObjectType, class InputIterator>
-void BuildKdTree<ObjectType,InputIterator>::sortindices ( int istart, int iend, int axis )
+template<class ObjectType>
+void BuildKdTree<ObjectType>::sortindices ( int istart, int iend, int axis )
 {
   for ( int i=istart; i<=iend; i++ ) {
     float t = _objcenters[_objindices[i]][axis];
@@ -89,64 +188,91 @@ void BuildKdTree<ObjectType,InputIterator>::sortindices ( int istart, int iend, 
 }
 
 // 
-template<class ObjectType, class InputIterator>
-int BuildKdTree<ObjectType,InputIterator>::getmidindex ( int istart, int iend, float mid, int axis )
+template<class ObjectType>
+int BuildKdTree<ObjectType>::getmidindex ( int istart, int iend, float mid, int axis )
 {
   int len = 0;
   for ( int i=istart; i<=iend; i++, len++ ) {
     if ( _objcenters[_objindices[i]][axis] > mid )
       return istart + len;
   }
+  return -1;
 }
 
-template<class ObjectType, class InputIterator>
-void BuildKdTree<ObjectType,InputIterator>::divide ( int nodeidx, int level )
+template<class ObjectType>
+void BuildKdTree<ObjectType>::divide ( int nodeidx, int level )
 {
   // if ( target number in this node < target number per leaf ) will stop divide 
   typename KdTree<ObjectType>::KdNode& node = _kdtree._nodes[_objindices[nodeidx]];
-  if ( node.second < targetnumperleaf ){
+  //  LOG_DEBUG ("nodeidx=%d, node.first=%d, node.second=%d, level=%d, targetnumperleaf=%d, maxlevel=%d", nodeidx, node.first, node.second, level, targetnumperleaf, maxlevel );
+  int istart = -node.first-1;
+  int iend   = istart + node.second;
+
+  if ( node.second < targetnumperleaf || level >= maxlevel ){
     // set node.bb
-    node.bb = getBBox ( node.first, node.first+node.second );
+    node.bb = getBBox ( istart, iend );
     return;
   }
 
   int axis = _axisstack[level];
   
-  int istart = -node.first;
-  int iend   = istart + node.second;
   // sort the indices from node.first to node.first + node.second
   sortindices ( istart, iend, axis );
 
   // calculate left and right node's indices range
-  float mid = ((node.bb.max()+node.bb.min())/2)[axis];
+  // float mid = ((node.bb.max()+node.bb.min())/2)[axis];
+  float mid = node.bb.center()[axis];
   int imid = getmidindex ( istart, iend, mid, axis );
-  node.left = _kdtree.addnode ( -istart, imid-istart );
-  divide ( node.left, level+1 );
+  LOG_DEBUG ("\tistart=%d, iend=%d, mid=%f, axis=%d, imid=%d", istart, iend, mid, axis, imid );
+  node.first = _kdtree.addNode ( -istart-1, imid-istart );
+  divide ( node.first, level+1 );
 
-  node.right = _kdtree.addnode( -imid, iend-imid );
-  divide ( node.right, level+1 );
+  LOG_DEBUG ("****istart=%d, iend=%d, mid=%f, axis=%d, imid=%d", istart, iend, mid, axis, imid );
+  node.second = _kdtree.addNode( -imid-1, iend-imid );
+  divide ( node.second, level+1 );
 }
+
 
 template<class ObjectType>
 template<class Vec, class Output >
-bool KdTree<ObjectType>::intersect ( int nodeidx, Vec& s, Vec& e, Output out )
+bool KdTree<ObjectType>::intersect ( const Vec& s, const Vec& e, Output out, int nodeidx )
 {
   KdNode& node = _nodes[nodeidx];
 
   Vec min = s.min ( e );
   Vec max = s.max ( e );
-  if ( max < _root.bb.min() || min > _root.bb.max() ) return false;
+  if ( max < node.bb.min() || min > node.bb.max() ) return false;
 
   if ( node.first >= 0 ) {  // if node is not leaf
-    intersect ( node.first, s, e, out );
-    if ( node.second > 0 )
-      findobj ( node.second, s, e, out );
+    intersect ( s, e, out, node.first);
+    intersect ( s, e, out, node.second );
   } else {  // if node is leaf 
-    int istart = -node.first;
-    int iend = -node.first + node.second;
-    for ( int i=istart; i!=iend; i++ ) {
-      *out++ = _objs[i];
+    if ( node.second > 0 ) {
+      int istart = -node.first-1;
+      int iend = istart + node.second;
+      for ( int i=istart; i!=iend; i++ ) {
+	BBox& bb = _objs[i]->getBBox();
+	if ( max < bb.min() || min > bb.max() ) 
+	  continue;
+
+	*out++ = _objs[i];
+      }
     }
   }
-  
+  return true;
+}
+
+template<class ObjectType>
+void KdTree<ObjectType>::dump ( int nodeIdx, int level  ) 
+{
+#ifdef _DEBUG_OUTPUT_
+  KdNode& node = _nodes[nodeIdx];
+  LOG_DEBUG ( "DUMP kdtree:  level=%d\tleft=%d\tright=%d", level, node.first, node.second );
+  if ( node.second == 0 )
+    return;
+  if ( node.first >=0 ) {
+    dump ( node.first, level+1 );
+    dump ( node.second, level+1 );
+  }
+#endif
 }
