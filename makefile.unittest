@@ -1,7 +1,7 @@
 CC=g++
 LD=g++
 TARGET=a.exe
-SOURCES = test.cpp kdtree.cpp unittest_vec.h
+SOURCES = test.cpp kdtree.h unittest_vec.h drawablenode.cpp
 OBJECTS := $(SOURCES:%.cpp=%.o)
 INCL=-I../alg/ -I../exception -I../../tinylog/src
 CFLAGS=-c -Os -fno-rtti -Wall
@@ -12,7 +12,7 @@ all: $(TARGET)
 
 #  Make target
 $(TARGET): $(OBJECTS) $(APPLIBS)
-	$(LD) $(LFLAGS) -o $(TARGET) $(OBJECTS) $(APPLIBS) $(SYSLIBS) tinylog.a
+	$(LD) $(LFLAGS) -o $(TARGET) $(OBJECTS) $(APPLIBS) $(SYSLIBS) tinylog.a  $(INCL)
 
 #  Make objects
 %.o: %.cpp

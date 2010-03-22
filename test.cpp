@@ -1,22 +1,28 @@
+#define _DEBUG_OUTPUT_
+
 #include "vec3.h"
 #include "mat.h"
 #include "unittest_vec.h"
+#include "unittest_kdtree.h"
+#include "unittest_bbox.h"
 //#include "alg_unittest.h"
 #include <iostream>
 #include <tinylog.h>
 
 using namespace std;
 
-
 int main ()
 {
   try {
+    LOG_LEVEL ( tinyLog::debug );
     vec3Test v3test ( 1, 2, 0);
+    bboxTest bboxtest;
+    kdtreeTest kdtreetest;
     //    algTest algtest;  
+    LOG_INFO ( "all unit test passed" );
   } catch ( exception& e ) {
     LOG_INFO ( "%s", e.what() );
   }
-  LOG_INFO ( "all unit test passed" );
   
   //   // float t[] = {2,2};
   //   vec2<float> v1(0, 22);
