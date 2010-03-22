@@ -11,9 +11,9 @@ public:
   typedef mat3 self;
   typedef const mat3& const_reference;
 
-  mat3 ( ValueType a00, ValueType a01, ValueType a02, 
-	 ValueType a10, ValueType a11, ValueType a12, 
-	 ValueType a20, ValueType a21, ValueType a12 ) {
+  mat3 ( ValueType a00=0, ValueType a01=0, ValueType a02=0, 
+	 ValueType a10=0, ValueType a11=0, ValueType a12=0, 
+	 ValueType a20=0, ValueType a21=0, ValueType a22=0 ) {
     m[0][0] = a00; m[0][1] = a01; m[0][2] = a02;
     m[1][0] = a10; m[1][1] = a11; m[1][2] = a12;
     m[2][0] = a20; m[2][1] = a21; m[2][2] = a22;
@@ -29,7 +29,30 @@ public:
     return Vec ( t, t1, t2 );
   }
 
-  
+  void dx ( ValueType v ) { m[2][0] = v; }
+  void dy ( ValueType v ) { m[2][1] = v; }
+  void sx ( ValueType v ) { m[0][0] = v; }
+  void sy ( ValueType v ) { m[1][1] = v; }
+
+  ValueType dx () { return m[2][0]; }
+  ValueType dy () { return m[2][1]; }
+  ValueType sx () { return m[0][0]; }
+  ValueType sy () { return m[1][1]; }
+  ValueType m00 () { return m[0][0]; }
+  ValueType m01 () { return m[0][1]; }
+  ValueType m02 () { return m[0][2]; }
+  ValueType m10 () { return m[1][0]; }
+  ValueType m11 () { return m[1][1]; }
+  ValueType m12 () { return m[1][2]; }
+  ValueType m20 () { return m[2][0]; }
+  ValueType m21 () { return m[2][1]; }
+  ValueType m22 () { return m[2][2]; }
+
+  void normal () {
+    m[0][0] = 1; m[0][1] = 0; m[0][2] = 0;
+    m[1][0] = 0; m[1][1] = 1; m[1][2] = 0;
+    m[2][0] = 0; m[2][1] = 0; m[2][2] = 1;
+  }
   static mat3 rotate_matrix ( float angle );
   static mat3 scale_matrix ( ValueType sx, ValueType sy );
 private:
@@ -66,5 +89,10 @@ inline mat3<ValueType> mat3<ValueType>::operator* ( const_reference rhs )
 			   m[2][0]*rhs.m[0][2] + m[2][1]*rhs.m[1][2] + m[2][1]*rhs.m[2][2]
 			   );		    
 }
+
+typedef mat3<float> mat3f;
+typedef mat3<double> mat3d;
+typedef mat3<int> mat3i;
+typedef mat3<short> mat3s;
 
 #endif
