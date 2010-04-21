@@ -1,20 +1,20 @@
 #ifndef _LAYER_NODE_H_
 #define _LAYER_NODE_H_
 
+#include "groupnode.h"
 #include "lodnode.h"
-#include "switchnode.h"
 
-class NodeVisitor;
-class LayerNode : public SwitchNode, public LODNode
+class LayerNode : public GroupNode
 {
 public:
-  virtual bool acceptTraversal ( NodeVisitor* pNodeVisitor ) { return (SwitchNode::acceptTraversal(pNodeVisitor) && LODNode::acceptTraversal(pNodeVisitor)); }
-public:
-  LayerNode () {_isLock = false; _isEnableEdit=true; }
-  void lock ( bool isLock ) { _isLock = isLock; }
-  void enableEdit ( bool isEnable ) { _isEnableEdit = isEnable; }
-private:
-  bool _isLock, _isEnableEdit;
+    LayerNode () {}
+    LODNode* lod() { return dynamic_cast<LODNode*>(*begin()); }
+    virtual void accept ( NodeVisitor& pvisitor ) const { pvisitor.apply ( *this ); }
+    virtual void accept ( NodeVisitor& pvisitor ) { pvisitor.apply ( *this ); }
+    virtual ~LayerNode () {}
 };
 
 #endif
+//public:
+//  virtual bool acceptTraversal ( NodeVisitor* nodevisitor ) { return isInLevelRange(nodevisitor->currentLevel()); }
+//isInLevelRange ( short l ) { return (l>=_dispLowLevel && l<=_dispHiLevel); }

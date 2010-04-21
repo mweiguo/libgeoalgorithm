@@ -1,13 +1,15 @@
 #define _DEBUG_OUTPUT_
+#include <tinylog.h>
 
 #include "vec3.h"
 #include "mat.h"
 #include "unittest_vec.h"
-#include "unittest_kdtree.h"
+// #include "unittest_kdtree.h"
 #include "unittest_bbox.h"
+#include "unittest_mat4.h"
+// #include "unittest_indexqsort.h"
 //#include "alg_unittest.h"
 #include <iostream>
-#include <tinylog.h>
 
 using namespace std;
 
@@ -15,10 +17,12 @@ int main ()
 {
   try {
     LOG_LEVEL ( tinyLog::debug );
-    vec3Test v3test ( 1, 2, 0);
-    bboxTest bboxtest;
-    kdtreeTest kdtreetest;
-    //    algTest algtest;  
+    // vec3Test v3test ( 1, 2, 0);
+    // bboxTest bboxtest;
+    mat4Test mat4test;
+    // kdtreeTest kdtreetest;
+    // IndexQSortTest indexqsorttest;
+  //    algTest algtest;  
     LOG_INFO ( "all unit test passed" );
   } catch ( exception& e ) {
     LOG_INFO ( "%s", e.what() );

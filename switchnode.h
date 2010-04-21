@@ -7,13 +7,14 @@ class NodeVisitor;
 class SwitchNode : public virtual SGNode
 {
 public:
-  virtual bool acceptTraversal ( NodeVisitor* pNodeVisitor );
-public:
-  SwitchNode () {_isVisible = true;}
-  bool isVisible() { return _isVisible; }
-  void setVisible(bool isVisible) { _isVisible = isVisible; }
+	SwitchNode () {_isVisible = true;}
+	bool isVisible() { return _isVisible; }
+	void setVisible(bool isVisible) { _isVisible = isVisible; }
+	virtual void accept ( NodeVisitor& pvisitor ) const { pvisitor.apply ( *this ); }
+    virtual void accept ( NodeVisitor& pvisitor ) { pvisitor.apply ( *this ); }
+    virtual ~SwitchNode () {}
 private:
-  bool _isVisible;
+	bool _isVisible;
 };
 
 #endif

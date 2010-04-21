@@ -26,8 +26,8 @@ public:
 
   iterator begin () { return _data.begin(); }
   const_iterator begin () const { return _data.begin(); }
-  iterator end () { return _data.end(); }
-  const_iterator end () const { return _data.end(); }
+  iterator end () { return _data.begin()+_currIdx; }
+  const_iterator end () const { return _data.begin()+_currIdx; }
 
   void reset() { _currIdx = 0; }
   void clear() { _data.clear(); }
