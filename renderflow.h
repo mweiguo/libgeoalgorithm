@@ -17,25 +17,25 @@ using namespace std;
 class Loding
 {
 public:
-    typedef map<string,vector<SpatialObjectMgr*>>::iterator iterator;
+    typedef map<int,vector<SpatialObjectMgr*>>::iterator iterator;
     static Loding& getInst() 
     {
         static Loding inst;
         return inst;
     }
-    void operator() ( const string& camname, float v ) 
+    void operator() ( int camid, float v ) 
     {
-		if ( _scenemgr.find ( camname ) == _scenemgr.end() )
-			_scenemgr[camname] = vector<SpatialObjectMgr*>();
+		if ( _scenemgr.find ( camid ) == _scenemgr.end() )
+			_scenemgr[camid] = vector<SpatialObjectMgr*>();
 
-		_scenemgr[camname].clear();
+		_scenemgr[camid].clear();
 
        for ( SceneMgr::iterator pp=SceneMgr::getInst().begin(); 
               pp!=SceneMgr::getInst().end(); ++pp ) {
             if ( (*pp)->isVisible () && !(*pp)->empty() ) {
                 //if ( _scenemgr.find ( camname ) == _scenemgr.end() )
                 //    _scenemgr[camname] = vector<SpatialObjectMgr*>();
-				_scenemgr[camname].push_back ( (*pp)->lod()->selectPresentation (v) );
+				_scenemgr[camid].push_back ( (*pp)->lod()->selectPresentation (v) );
             }
         }
 
@@ -45,7 +45,7 @@ public:
     iterator end() { return _scenemgr.end(); }
 private:
     Loding () {}
-    map<string,vector<SpatialObjectMgr*>> _scenemgr;
+    map<int,vector<SpatialObjectMgr*>> _scenemgr;
 };
 
 class Culling
@@ -57,14 +57,14 @@ public:
         static Culling inst;
         return inst;
     }
-    void operator() ( const string& camname, const BBox& box, vector<SpatialObjectMgr*>& soms/*Spatial object mgrs*/ ) 
+    void operator() ( int camid, const BBox& box, vector<SpatialObjectMgr*>& soms/*Spatial object mgrs*/ ) 
     {
 		static Rectanglef rect;
         typedef vector<SpatialObjectMgr*> SpatialObjectMgrs;
-        RenderListMgr::iterator pp = _renderlistmgr.find ( camname );
+        RenderListMgr::iterator pp = _renderlistmgr.find ( camid );
         RenderList* renderlist=0;
         if ( pp == _renderlistmgr.end() )
-            _renderlistmgr[camname] = renderlist = new RenderList();
+            _renderlistmgr[camid] = renderlist = new RenderList();
         else
             renderlist = (*pp).second;
         renderlist->reset();
@@ -79,7 +79,7 @@ public:
 			qDebug ( "%s", (*pp)->intersectstatistic ().c_str() );
 #endif
 			// insert bbox
-			CameraOrtho* cam = CameraMgr::getInst()[camname];
+			CameraOrtho* cam = CameraMgr::getInst()[camid];
 			if ( cam )
 			{
 				BBox box = cam->viewvolume();
@@ -90,7 +90,7 @@ public:
 			}
 		}
     }
-    RenderListMgr::iterator findRenderList ( const string& cameraname ) { return _renderlistmgr.find ( cameraname ); }
+    RenderListMgr::iterator findRenderList ( int camid ) { return _renderlistmgr.find ( camid ); }
     iterator begin() { return _renderlistmgr.begin(); }
     iterator end() { return _renderlistmgr.end(); }
 private:
@@ -116,45 +116,42 @@ public:
     RenderFlow (RenderOption& opt) {
         // loding
 		Loding& loding = Loding::getInst();
-        for ( CameraMgr::iterator pp=CameraMgr::getInst().begin(); 
-              pp!=CameraMgr::getInst().end(); 
-              ++pp ) {
-            CameraOrtho& cam = *(pp->second);
-            if ( cam.dirty() ) {
-				loding ( cam.name(), cam.mvmatrix().sx() );
+		CameraMgr& cammgr = CameraMgr::getInst();
+		ViewportMgr& vpmgr = ViewportMgr::getInst();
+        for ( CameraMgr::iterator pp=cammgr.begin(); pp!=cammgr.end(); ++pp ) {
+            CameraOrtho* cam = pp->second;
+            if ( cam && cam->dirty() ) {
+				loding ( pp->first, cam->mvmatrix().sx() );
             }
         }
 
         // culling
 		Culling& culling = Culling::getInst();
-        for ( Loding::iterator pp=loding.begin(); 
-              pp!=loding.end(); 
-              ++pp ) {
-            CameraOrtho* cam = CameraMgr::getInst()[pp->first];
+        for ( Loding::iterator pp=loding.begin(); pp!=loding.end(); ++pp ) {
+            CameraOrtho* cam =cammgr[pp->first];
             if ( cam && cam->dirty() ) {
-                culling ( cam->name(), cam->viewvolume(), pp->second );
+                culling ( pp->first, cam->viewvolume(), pp->second );
                 cam->dirty( false );
             }
         }
 
         // rendering
-        for ( ViewportMgr::iterator pp=ViewportMgr::getInst().begin();
-              pp!=ViewportMgr::getInst().end();
-              ++pp ) {
-            Viewport& viewport = *pp->second;
+        for ( ViewportMgr::iterator pp0=vpmgr.begin(); pp0!=vpmgr.end(); ++pp0 ) {
+            Viewport& viewport = *pp0->second;
             //if ( viewport.dirty() ) {
+                int camid = viewport.cameraid();
                 CameraOrtho* cam = viewport.camera();
-				if ( cam ) {
-					Culling::iterator pp = culling.findRenderList(cam->name());
+				if ( cam )
+				{
+					Culling::iterator pp = culling.findRenderList ( camid );
 					if ( pp != culling.end() ) {
-						mat4f old = opt.matrix;				
+						mat4f old = opt.matrix;
 						opt.matrix = viewport.vpmatrix() * cam->mvmatrix();
 						Rendering ( *(pp->second), opt );
 						opt.matrix = old;
 					}
 					//viewport.dirty( false );
 				}
-				//}
         }
     }
 };

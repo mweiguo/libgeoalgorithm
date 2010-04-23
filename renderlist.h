@@ -5,6 +5,6 @@
 
 class DrawableNode;
 typedef quickvector<DrawableNode*> RenderList;
-typedef map<string, RenderList*> RenderListMgr;
+typedef map<int, RenderList*> RenderListMgr;
 
 #endif

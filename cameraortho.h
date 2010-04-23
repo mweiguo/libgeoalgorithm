@@ -8,116 +8,112 @@
 class CameraOrtho
 {
 public:
-  CameraOrtho (const string& name);
-  const string& name() const { return _name; }
-  void name(const string& n) { _name = n; }
-  bool dirty() { return _dirty; }
-  void dirty( bool v ) { _dirty = v; }
+    CameraOrtho (const string& name);
+    const string& name() const { return _name; }
+    void name(const string& n) { _name = n; }
+    bool dirty() { return _dirty; }
+    void dirty( bool v ) { _dirty = v; }
     
         
-  // bbox in object-coord;
-  BBox viewvolume () {
-    BBox box;
-    box.init ( (_inversemvmatrix * vec4f(-1, -1, -1, 1)).xyz() );
-    box.expandby ( (_inversemvmatrix * vec4f(1, 1, -2, 1 )).xyz() );
-    return box;
-  }
+    // bbox in object-coord;
+    BBox viewvolume () {
+        BBox box;
+        //box.init ( vec4f(-1, -1, -1, 1).xyz() );
+        //box.expandby ( vec4f(1, 1, -2, 1 ).xyz() );
+        box.init ( (_inversemvmatrix * vec4f(-1, -1, -1, 1)).xyz() );
+        box.expandby ( (_inversemvmatrix * vec4f(1, 1, -2, 1 )).xyz() );
+        return box;
+    }
 
-  // behaviors
-  void reset ();
-  // these interface only modify model-view matrix and  do not support anisotropic scale
-  void zoom ( float scale ); 
-  void translate ( const vec3f& offset ); 
+    // behaviors
+    void reset ();
+    // these interface only modify model-view matrix and  do not support anisotropic scale
+    void zoom ( float scale ); 
+    void translate ( const vec3f& offset ); 
 
-  mat4f& mvmatrix () { return _mvmatrix; }
-  // return value in object-coord
-  vec3f position () { return ( _inversemvmatrix * vec4f(0,0,0,0)).xyz(); };
+    mat4f& mvmatrix () { return _mvmatrix; }
+    // return value in object-coord
+    vec3f position () { return ( _inversemvmatrix * vec4f(0,0,0,0)).xyz(); };
 private:
-  string _name;
-  mat4f _mvmatrix;
-  mat4f _inversemvmatrix;
+    string _name;
+    mat4f _mvmatrix;
+    mat4f _inversemvmatrix;
 
-  bool _dirty;
+    bool _dirty;
 };
 
 inline CameraOrtho::CameraOrtho (const string& name) : _name(name)
 {
-  dirty ( true );
+    dirty ( true );
 }
 
 inline void CameraOrtho::reset ()
 {
-  _mvmatrix.normalize();
-  _inversemvmatrix.normalize();
-  dirty ( true );
+    _mvmatrix.normalize();
+    _inversemvmatrix.normalize();
+    dirty ( true );
 }
 
 inline void CameraOrtho::zoom ( float scale )
 {
-  if ( scale < 0 )
-    scale = -1/scale;
-  if ( scale == 1 )
-    return;
-  mat4f smat = mat4f::scale_matrix ( scale, scale, scale );
-  scale = 1.0/scale;
-  mat4f invertsmat = mat4f::scale_matrix ( scale, scale, scale );
+    if ( scale < 0 )
+        scale = -1/scale;
+    if ( scale == 1 )
+        return;
+    mat4f smat = mat4f::scale_matrix ( scale, scale, scale );
+    scale = 1.0/scale;
+    mat4f invertsmat = mat4f::scale_matrix ( scale, scale, scale );
 
-  _mvmatrix = smat * _mvmatrix;
-  _inversemvmatrix = _inversemvmatrix * invertsmat;
+    _mvmatrix = smat * _mvmatrix;
+    _inversemvmatrix = _inversemvmatrix * invertsmat;
 
-  dirty ( true );
+    dirty ( true );
 }
 
 inline void CameraOrtho::translate ( const vec3f& offset )
 {
-  mat4f tmat = mat4f::translate_matrix ( offset.x(), offset.y(), offset.z() );
-  mat4f inverttmat = mat4f::translate_matrix ( -offset.x(), -offset.y(), -offset.z() );
+    mat4f tmat = mat4f::translate_matrix ( offset.x(), offset.y(), offset.z() );
+    mat4f inverttmat = mat4f::translate_matrix ( -offset.x(), -offset.y(), -offset.z() );
 
-  _mvmatrix = tmat * _mvmatrix;
-  _inversemvmatrix = _inversemvmatrix * inverttmat;
-  //_mvmatrix.dx( _mvmatrix.dx() + offset.x() );
-  //   _mvmatrix.dy( _mvmatrix.dy() + offset.y() );
-  //   _mvmatrix.dz( _mvmatrix.dz() + offset.z() );
-
-  //   _inversemvmatrix.dx( _inversemvmatrix.dx() - offset.x() );
-  //   _inversemvmatrix.dy( _inversemvmatrix.dy() - offset.y() );
-  //   _inversemvmatrix.dz( _inversemvmatrix.dz() - offset.z() );
-  if ( offset != vec3f(0,0,0) )
-    dirty ( true );
+    _mvmatrix = tmat * _mvmatrix;
+    _inversemvmatrix = _inversemvmatrix * inverttmat;
+    if ( offset != vec3f(0,0,0) )
+        dirty ( true );
 }
 
 class CameraMgr
 {
 public:
-  typedef map<int, CameraOrtho*>::iterator iterator;
-  typedef map<int, CameraOrtho*>::const_iterator const_iterator;
-  static CameraMgr& getInst()
-  {
-    static CameraMgr inst;
-    return inst;
-  }
-  CameraOrtho* addCamera ( int id )
-  {
-    CameraOrtho* pp = NULL;
-    if ( _cameras.find ( id ) == _cameras.end() )
-      _cameras[name] = pp = new CameraOrtho(name);
-    return pp;
-  }
-  iterator begin() { return _cameras.begin(); }
-  iterator end() { return _cameras.end(); }
-  CameraOrtho* operator[] ( int id ) 
-  {
-    iterator pp = _cameras.find ( id );
-    if ( pp == _cameras.end() )
-      return NULL;
-    return pp->second;
-  }
-  void erase ( int id ) 
-  {
-    _cameras.erase ( id );
-  }
+    typedef map<int, CameraOrtho*>::iterator iterator;
+    typedef map<int, CameraOrtho*>::const_iterator const_iterator;
+    static CameraMgr& getInst() {
+        static CameraMgr inst;
+        return inst;
+    }
+    CameraOrtho* addCamera ( int id )
+    {
+        CameraOrtho* pp = NULL;
+        if ( _cameras.find ( id ) == _cameras.end() )
+            _cameras[id] = pp = new CameraOrtho("default");
+        return pp;
+    }
+    iterator begin() { return _cameras.begin(); }
+    iterator end() { return _cameras.end(); }
+    CameraOrtho* operator[] ( int id ) 
+    {
+        iterator pp = _cameras.find ( id );
+        if ( pp == _cameras.end() )
+            return NULL;
+        return pp->second;
+    }
+    void erase ( int id ) 
+    {
+        _cameras.erase ( id );
+    }
 private:
-  map<int, CameraOrtho*> _cameras;
+    CameraMgr() { }
+private:
+    map<int, CameraOrtho*> _cameras;
 };
 
 #endif

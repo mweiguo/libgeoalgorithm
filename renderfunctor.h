@@ -12,6 +12,7 @@ struct RenderOption
 	//mat4f* mvmatrix;
 	// matrix = viewpmapping * model-view
 	mat4f matrix;
+	RenderOption() : painter(0) {}
 };
 
 class QtRenderFunctor : public NodeVisitor

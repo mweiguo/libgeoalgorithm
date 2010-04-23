@@ -1,6 +1,7 @@
 #ifndef _RENDER_H_
 #define _RENDER_H_
 
+#include "interface.h"
 // node
 #include "sgnode.h"
 #include "arraynode.h"

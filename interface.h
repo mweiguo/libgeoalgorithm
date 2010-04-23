@@ -1,15 +1,21 @@
 // camera management
-int create_camera ();
-void delete_camera ( int id );
-void camera_props ( int id, float scale, float tx, float ty, float tz )
+int camera_create ();
+void camera_delete ( int id );
+void camera_translate ( int id, float scale, float tx, float ty, float tz );
+void camera_zoom ( int id, float scale );
+void camera_reset ( int id );
 // viewport management
-int create_viewport ();
-void delete_viewport ( int id );
+int viewport_create ( const char* name );
+void viewport_delete ( int id );
 void viewport_geometry ( int id, int x, int y, int w, int h );
-void viewport_camera ( int id, int camid );
+void viewport_attachcamera ( int id, int camid );
+void viewport_name ( int id, const char* name );
+void viewport_update ( int id );
 // io
-int load_mesh ();
+int load_mesh ( const char* file );
 void unload_mesh (int id);
+
+// build mesh interfaces
 /* // mesh management */
 /* int create_layer ( int parent ); */
 /* void delete_layer ( int id ); */

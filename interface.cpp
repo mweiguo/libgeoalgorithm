@@ -50,6 +50,14 @@ void viewport_camera ( int id, int camid )
   p->attachcamera ( cam );
 }
 
+void viewport_name ( int id, const char* nm )
+{
+  Viewport* p = ViewportMgr::getInst()[id];
+  if ( NULL == p )
+    return;
+  p->name ( name );
+}
+
 int load_mesh ()
 {
 }

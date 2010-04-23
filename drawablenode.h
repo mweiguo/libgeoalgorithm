@@ -13,13 +13,14 @@ class DrawableNode : public SGNode
 //  virtual void updateRenderList ( RenderItemContainer& output );
 //  virtual void render (QPainter& painter) = 0;
 public:
-	DrawableNode() {}
+	DrawableNode() : _bRender(true) {}
 	const BBox& getBBox () const { return _bb; }
 	virtual void accept ( NodeVisitor& pvisitor ) const { pvisitor.apply ( *this ); }
     virtual void accept ( NodeVisitor& pvisitor ) { pvisitor.apply ( *this ); }
     virtual ~DrawableNode () {}
 protected:
 	BBox _bb;
+	bool _bRender;
 };
 
 //
