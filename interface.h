@@ -1,7 +1,7 @@
 // camera management
-int camera_create ();
+int camera_create ( const char* name );
 void camera_delete ( int id );
-void camera_translate ( int id, float scale, float tx, float ty, float tz );
+void camera_translate ( int id, float tx, float ty, float tz );
 void camera_zoom ( int id, float scale );
 void camera_reset ( int id );
 // viewport management
