@@ -3,6 +3,7 @@
 
 #include <list>
 #include <iterator>
+#include <algorithm>
 //#include "quickvector.h"
 #include "nodevisitor.h"
 using namespace std;
@@ -22,7 +23,7 @@ public:
         _addChild ( pNode );
     }
     void removeChild ( SGNode* pNode ) {
-        if ( _children.find ( pNode ) != _children.end() ) {
+        if ( find ( _children.begin(), _children.end(), pNode ) != _children.end() ) {
             pNode->_setParent ( NULL );
             _removeChild ( pNode );
         }

@@ -20,12 +20,12 @@ class RenderNodeCollector : public NodeVisitor
 public:
     typedef vector<DrawableNode*>::iterator iterator;
     typedef vector<DrawableNode*>::const_iterator const_iterator;
-    RenderNodeCollector(Output& output) : _result(output) {}
+    RenderNodeCollector( Output output) : _result(output) {}
     virtual void apply ( Rectanglef& node );
     virtual void apply ( TransformNode& node );
     virtual void apply ( ArrayNode& node );
 private:
-    Output& _result;
+    Output _result;
     mat4f _curmat;
 };
 
