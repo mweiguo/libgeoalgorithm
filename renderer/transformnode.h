@@ -3,10 +3,12 @@
 
 #include "switchnode.h"
 #include "mat4.h"
+#include "nodemgr.h"
 
 #include <vector>
 #include <sstream>
 #include <algorithm>
+
 
 using namespace std;
 
@@ -24,7 +26,10 @@ public:
         copy(istream_iterator<string>(iss), istream_iterator<string>(), back_inserter<vector<string> >(tokens));
         int i=0;
         for ( vector<string>::iterator pp=tokens.begin(); pp!=tokens.end(); ++pp, i++ )
-            floattokens[i] = atof(pp->c_str() );
+	{
+	    iss.str ( *pp );
+	    iss >> floattokens[i];
+	}
         setTranslate ( floattokens[0], floattokens[1], floattokens[2]);
     }
     void setTranslate ( float dx, float dy, float dz ) { _mat.dx ( dx ); _mat.dy(dy); _mat.dz(dz); }
@@ -38,18 +43,23 @@ public:
         copy(istream_iterator<string>(iss), istream_iterator<string>(), back_inserter<vector<string> >(tokens));
         
         int i=0;
-		for ( vector<string>::iterator pp=tokens.begin(); pp!=tokens.end(); ++pp, i++ )
-            floattokens[i] = atof(pp->c_str() );
+	for ( vector<string>::iterator pp=tokens.begin(); pp!=tokens.end(); ++pp, i++ )
+	{
+	    iss.str ( *pp );
+	    iss >> floattokens[i];
+//             floattokens[i] = atof(pp->c_str() );
+	}
         setScale ( floattokens[0], floattokens[1], floattokens[2]);
     }
     void setScale ( float sx, float sy, float sz ) { _mat.sx(sx); _mat.sy(sy); _mat.sz(sz); }
     mat4f& getMatrix () { return _mat; }
     const mat4f& getMatrix () const { return _mat; }
-	virtual void accept ( NodeVisitor& pvisitor ) const { pvisitor.apply ( *this ); }
+    virtual void accept ( NodeVisitor& pvisitor ) const { pvisitor.apply ( *this ); }
     virtual void accept ( NodeVisitor& pvisitor ) { pvisitor.apply ( *this ); }
     virtual ~TransformNode () {}
 private:
     mat4f _mat;
 };
 
+typedef NodeMgr<TransformNode>  TransformNodeMgr;
 #endif
