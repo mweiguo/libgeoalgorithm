@@ -73,10 +73,10 @@ public:
 template < class ValueType >
 inline ValueType vec4<ValueType>::mod ()
 { 
-    double x = x() / w();
-    double y = y() / w();
-    double z = z() / w();
-    return sqrt( x*x + y*y + z*z ); 
+    double x1 = x() / w();
+    double y1 = y() / w();
+    double z1 = z() / w();
+    return sqrt( x1*x1 + y1*y1 + z1*z1 ); 
 }
 
 
