@@ -2,11 +2,12 @@
 #define _ARRAY_NODE_H_
 
 #include <algorithm>
+#include "nodemgr.h"
 
 class ArrayNode : public virtual SGNode
 {
 public:
-	ArrayNode ();
+    ArrayNode ();
 
     void setRowCnt ( int cnt )    { _rowCnt = cnt; }
     void setColumnCnt ( int cnt ) { _columnCnt = cnt; }
@@ -20,8 +21,8 @@ public:
     void setMarginY ( int idx, float margin ) { _marginy[idx] = margin; }
     float getMarginX ( int idx ) { return _marginx[idx]; }
     float getMarginY ( int idx ) { return _marginy[idx]; }
-	int rowCnt () const { return _rowCnt; }
-	int columnCnt () const { return _columnCnt; }
+    int rowCnt () const { return _rowCnt; }
+    int columnCnt () const { return _columnCnt; }
     float getVOffset ( int i ) const;
     float getHOffset ( int i ) const;
     void getShapeGenParas (int index, int& s1, int& s2, int& s3, int& s4, int& s5, int& s6, int level0Cnt, int level1Cnt, int level2Cnt, int level3Cnt, int level4Cnt, int level5Cnt ) const;
@@ -35,10 +36,10 @@ private:
 
 inline ArrayNode::ArrayNode ()
 {
-	std::fill ( _levelHCnt, _levelHCnt+6, 0 );
-	std::fill ( _levelVCnt, _levelVCnt+6, 0 );
-	std::fill ( _marginx, _marginx+6, 0 );
-	std::fill ( _marginy, _marginy+6, 0 );
+    std::fill ( _levelHCnt, _levelHCnt+6, 0 );
+    std::fill ( _levelVCnt, _levelVCnt+6, 0 );
+    std::fill ( _marginx, _marginx+6, 0 );
+    std::fill ( _marginy, _marginy+6, 0 );
 }
 
 inline float ArrayNode::getVOffset ( int i ) const
@@ -56,14 +57,14 @@ inline float ArrayNode::getHOffset ( int i ) const
 }
 
 inline void ArrayNode::getShapeGenParas (int index, int& s0, int& s1, int& s2, int& s3, int& s4, int& s5,
-								  int level0, int level1, int level2, int level3, int level4, int level5 ) const
+                                         int level0, int level1, int level2, int level3, int level4, int level5 ) const
 {
-	s5 = level4 ? index / level4 : 0;
-	s4 = level3 ? index / level3 - s5 : 0;
-	s3 = level2 ? index / level2 - s4 - s5 : 0;
-	s2 = level1 ? index / level1 - s3 - s4 - s5 : 0;
-	s1 = level0 ? index / level0 - s2 - s3 - s4 - s5 : 0;
-	s0 = level0 ? index - s1 - s2 - s3 - s4 - s5 : 0;
+    s5 = level4 ? index / level4 : 0;
+    s4 = level3 ? index / level3 - s5 : 0;
+    s3 = level2 ? index / level2 - s4 - s5 : 0;
+    s2 = level1 ? index / level1 - s3 - s4 - s5 : 0;
+    s1 = level0 ? index / level0 - s2 - s3 - s4 - s5 : 0;
+    s0 = level0 ? index - s1 - s2 - s3 - s4 - s5 : 0;
     //// init
     //s1 = s2 = s3 = s4 = s5 = 0;
 
@@ -105,4 +106,5 @@ inline void ArrayNode::getShapeGenParas (int index, int& s0, int& s1, int& s2, i
     //s6 = index / level5Cnt;
 }
 
+typedef NodeMgr<ArrayNode>        ArrayNodeMgr;
 #endif

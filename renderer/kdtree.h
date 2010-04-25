@@ -9,7 +9,7 @@
 #ifdef _USESTATISTIC_
 #include <time.h>
 #include <sstream>
-#endif
+#endif //_USESTATISTIC_
 using namespace std;
 
 // macro _USESTATISTIC_ will switch static function for kdtree
@@ -47,7 +47,7 @@ public:
     bool intersect ( const BBox& box, Output out, int nodeidx=0 );
 
     void reset () {
-        clear();
+        vector<ObjectType>::clear();
         _nodes.clear();
     }
 
@@ -58,7 +58,7 @@ public:
 private:
     int _buildStartClock, _buildFinishedClock;
     int _bbcompcnt, _selectedCount;
-#endif
+#endif // _USESTATISTIC_
 private:
     //void addPrimitive (ObjectType obj) { _objs.push_back (obj); }
     int addNode ( int f, int s ) { _nodes.push_back ( KdNode(f, s) ); return _nodes.size()-1; }
@@ -99,7 +99,7 @@ public:
     }
 private:
     int _buildStartClock, _buildFinishedClock;
-#endif
+#endif // _USESTATISTIC_
 private:
     void computeDivision(const BBox& bb, const BuildKdTreeOption& opt );
     void divide ( const BuildKdTreeOption& opt, int nodeidx=0, int level=0 );
@@ -138,9 +138,9 @@ inline BuildKdTree<ObjectType>::BuildKdTree ( KdTree<ObjectType>& kdtree, /*BBox
 
 #ifdef _USESTATISTIC_
     _buildStartClock = clock();
-#endif
+#endif // _USESTATISTIC_
     BBox bb;
-    for ( int i=0; i<kdtree.size(); i++ )
+    for ( size_t i=0; i<kdtree.size(); i++ )
         bb = bb.unionbox ( kdtree[i]->getBBox() );
 
     computeDivision (bb, opt);
@@ -150,21 +150,21 @@ inline BuildKdTree<ObjectType>::BuildKdTree ( KdTree<ObjectType>& kdtree, /*BBox
 
     transform ( _kdtree->begin(), _kdtree->end(), back_inserter(_objcenters), getBBCenter<ObjectType>() );
 
-    int root = _kdtree->addNode ( -1, _kdtree->size() );
+    /* int root =  */_kdtree->addNode ( -1, _kdtree->size() );
 
     divide (opt/*, bb*/);
 
     // set kdtree's objs in sorted order
     vector<ObjectType> objs;
     objs.reserve( _kdtree->size());
-    for ( int i=0; i<_objindices.size(); i++ ) {
+    for ( size_t i=0; i<_objindices.size(); i++ )
         objs.push_back ( (*_kdtree)[_objindices[i]] );
-    }
+
     _kdtree->swap ( objs );
 
 #ifdef _USESTATISTIC_
     _buildFinishedClock = clock();
-#endif
+#endif // _USESTATISTIC_
     //_kdtree->dump ( root, 0 );
 }
 
@@ -178,7 +178,7 @@ inline BuildKdTree<ObjectType>::BuildKdTree ( KdTree<ObjectType>& kdtree,
     _kdtree = &kdtree;
 #ifdef _USESTATISTIC_
     _buildStartClock = clock();
-#endif
+#endif // _USESTATISTIC_
     BBox bb;
     for ( int i=0; i<kdtree.size(); i++ )
         bb = bb.unionbox ( kdtree[i]->getBBox() );
@@ -206,7 +206,7 @@ inline BuildKdTree<ObjectType>::BuildKdTree ( KdTree<ObjectType>& kdtree,
 
 #ifdef _USESTATISTIC_
     _buildFinishedClock = clock();
-#endif
+#endif // _USESTATISTIC_
     //_kdtree->dump ( root, 0 );
 }
 
@@ -215,7 +215,7 @@ inline void BuildKdTree<ObjectType>::computeDivision(const BBox& bb, const Build
 {
 #ifdef _DEBUG_OUTPUT_
     //LOG_DEBUG ( "begin computeDivision ... " );
-#endif
+#endif // _DEBUG_OUTPUT_
     vec3f dimension;
     dimension = bb.max() - bb.min();
 
@@ -243,7 +243,7 @@ inline void BuildKdTree<ObjectType>::computeDivision(const BBox& bb, const Build
 
 #ifdef _DEBUG_OUTPUT_
     //LOG_DEBUG ( "ok" );
-#endif
+#endif // _DEBUG_OUTPUT_
 }
 
 //[istart, iend)
@@ -271,41 +271,6 @@ private:
     vector<Vec>& _vecs;
     int _axis;
 };
-
-//#include "time.h"
-////[istart, iend)
-//template<class ObjectType>
-//void BuildKdTree<ObjectType>::sortindices ( int istart, int iend, int axis )
-//{
-//      IndexComp<vec3f> comp(_objcenters, axis);
-//      std::sort ( _objindices.begin()+istart, _objindices.begin()+iend, comp );
-//      //int clo = clock();
-//      //qDebug ( "_ISORT_MAX=%d, sort %d clock, %f (ms)", _ISORT_MAX, clock() - clo,  (1000.0*(clock() - clo))/CLOCKS_PER_SEC );
-//      //IndexVecSort<vec3f> sort(_objindices, _objcenters, axis);
-//      //sort.sort ( istart, iend );
-//      //std::sort ( istart, iend, IndexLesser(_objindices, _objcenters, axis) );
-//
-//      //for ( int i=istart; i<iend; i++ ) {
-//      //      float t = _objcenters[_objindices[i]][axis];
-//      //      for ( int j=i; j<iend; j++ ) {
-//      //              float t1 = _objcenters[_objindices[j]][axis];
-//      //              if ( t1 < t )
-//      //                      swap ( _objindices[i], _objindices[j] );
-//      //      }
-//      //}
-//}
-
-//// [istart, iend)
-//template<class ObjectType>
-//int BuildKdTree<ObjectType>::getmidindex ( int istart, int iend, float mid, int axis )
-//{
-//      int len = 0;
-//      for ( int i=istart; i<iend; i++, len++ ) {
-//              if ( _objcenters[_objindices[i]][axis] > mid )
-//                      break;
-//      }
-//      return istart + len - 1;
-//}
 
 template<class ObjectType>
 inline void BuildKdTree<ObjectType>::divide ( const BuildKdTreeOption& opt, /*BBox& bb, */int nodeidx, int level )
@@ -344,7 +309,7 @@ inline void BuildKdTree<ObjectType>::divide ( const BuildKdTreeOption& opt, /*BB
         ss0 << "  ";
     //qDebug ("%slevel=%d, istart=%d, iend=%d, imid=%d, axis=%d, indices=[%s]", ss0.str().c_str(), level, istart, iend, imid, axis, ss.str().c_str() );
     qDebug ("%slevel=%d, istart=%d, iend=%d, imid=%d, elementnum=%d, axis=%d", ss0.str().c_str(), level, istart, iend, imid, iend-istart, axis );
-#endif
+#endif // _DEBUG_OUTPUT1_
     node.first = _kdtree->addNode ( -istart-1, imid-istart );
     node.second = _kdtree->addNode( -imid-1, iend-imid );
 
@@ -387,7 +352,7 @@ inline KdTree<ObjectType>::KdTree ()
 {
 #ifdef _USESTATISTIC_
     _bbcompcnt = 0;
-#endif
+#endif //  _USESTATISTIC_
 }
 
 template<class ObjectType>
@@ -528,10 +493,10 @@ inline void KdTree<ObjectType>::dump ( int nodeIdx, int level  )
     }
 }
 
-#endif
+#endif // _USESTATISTIC_
 
 #include "drawablenode.h"
 //typedef KdTree<DrawableNode*> Kdtree;
 typedef KdTree<DrawableNode*> SpatialObjectMgr;
 typedef BuildKdTree<DrawableNode*> BuildSpatialObjectMgr;
-#endif
+#endif // _KDTREE_H_
