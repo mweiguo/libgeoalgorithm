@@ -14,10 +14,9 @@
 #include "kdtree.h"
 
 using namespace std;
-class Loding
+class Loding : public map<int,vector<SpatialObjectMgr*> >
 {
 public:
-    typedef map<int,vector<SpatialObjectMgr*>>::iterator iterator;
     static Loding& getInst() 
     {
         static Loding inst;
@@ -25,30 +24,23 @@ public:
     }
     void operator() ( int camid, float v ) 
     {
-        if ( _scenemgr.find ( camid ) == _scenemgr.end() )
-            _scenemgr[camid] = vector<SpatialObjectMgr*>();
+        if ( find ( camid ) == end() )
+            (*this)[camid] = vector<SpatialObjectMgr*>();
 
-        _scenemgr[camid].clear();
+        (*this)[camid].clear();
 
         for ( SceneMgr::iterator pp=SceneMgr::getInst().begin(); 
               pp!=SceneMgr::getInst().end(); ++pp ) {
             if ( (*pp)->isVisible () && !(*pp)->empty() ) {
-                //if ( _scenemgr.find ( camname ) == _scenemgr.end() )
-                //    _scenemgr[camname] = vector<SpatialObjectMgr*>();
-                _scenemgr[camid].push_back ( (*pp)->lod()->selectPresentation (v) );
+                (*this)[camid].push_back ( (*pp)->lod()->selectPresentation (v) );
             }
         }
-
-        //_scenemgr[camname] = LodMgr::getInst().selectPresentation ( dist );
     }
-    iterator begin() { return _scenemgr.begin(); }
-    iterator end() { return _scenemgr.end(); }
 private:
     Loding () {}
-    map<int,vector<SpatialObjectMgr*>> _scenemgr;
 };
 
-class Culling
+class Culling : public map<int, RenderList*>
 {
 public:
     typedef RenderListMgr::iterator iterator;
@@ -61,10 +53,10 @@ public:
     {
         static Rectanglef rect;
         typedef vector<SpatialObjectMgr*> SpatialObjectMgrs;
-        RenderListMgr::iterator pp = _renderlistmgr.find ( camid );
+        RenderListMgr::iterator pp = find ( camid );
         RenderList* renderlist=0;
-        if ( pp == _renderlistmgr.end() )
-            _renderlistmgr[camid] = renderlist = new RenderList();
+        if ( pp == end() )
+            (*this)[camid] = renderlist = new RenderList();
         else
             renderlist = (*pp).second;
         renderlist->reset();
@@ -90,20 +82,19 @@ public:
             }
         }
     }
-    RenderListMgr::iterator findRenderList ( int camid ) { return _renderlistmgr.find ( camid ); }
-    iterator begin() { return _renderlistmgr.begin(); }
-    iterator end() { return _renderlistmgr.end(); }
+//     RenderListMgr::iterator findRenderList ( int camid ) { return _renderlistmgr.find ( camid ); }
+//     iterator begin() { return _renderlistmgr.begin(); }
+//     iterator end() { return _renderlistmgr.end(); }
 private:
-    RenderListMgr _renderlistmgr;
+    Culling () {}
+//     RenderListMgr _renderlistmgr;
 };
 
 class Rendering
 {
 public:
     Rendering ( const RenderList& renderlist, RenderOption& opt ) {
-        for ( RenderList::const_iterator pp=renderlist.begin(); 
-              pp!=renderlist.end(); 
-              ++pp ) {
+        for ( RenderList::const_iterator pp=renderlist.begin(); pp!=renderlist.end(); ++pp ) {
             QtRenderFunctor func ( &opt );
             (*pp)->accept ( func );
         }
@@ -143,7 +134,7 @@ public:
             CameraOrtho* cam = viewport.camera();
             if ( cam )
             {
-                Culling::iterator pp = culling.findRenderList ( camid );
+                Culling::iterator pp = culling.find ( camid );
                 if ( pp != culling.end() ) {
                     mat4f old = opt.matrix;
                     opt.matrix = viewport.vpmatrix() * cam->mvmatrix();
@@ -155,5 +146,56 @@ public:
         }
     }
 };
+
+class RenderPass
+{
+    static const int END               = 0;
+    static const int CAMERACHECKING    = 1;
+    static const int VIEWPORTCHECKING  = 2;
+    static const int LODING            = 3;
+    static const int CULLING           = 4;
+    static const int RENDERING         = 5;
+public:
+    RenderPass ( viewport& vp, RenderOption& opt )
+    {
+        CameraOrtho* cam = vp.camera();
+        int camid = vp.cameraid();
+
+        int state = CAMERACHECKING;
+        while ( state != END )
+        {
+            switch ( state )
+            {
+            case CAMERACHECKING:
+                if ( cam->dirty() )
+                    state = LODING;
+                else
+                    state = VIEWPORTCHECKING;
+                break;
+            case VIEWPORTCHECKING:
+                if ( vp.dirty() )
+                    state = RENDERING;
+                else
+                    state = END;
+                break;
+            case LODING:
+                Loding::getInst()( camid, cam->mvmatrix().sx() );
+                state = CULLING;
+                break;
+            case CULLING:
+                Culling::getInst()( camid, cam->viewvolume(), Loding::getInst()[camdid] );
+                cam->dirty( false );
+                state = RENDERING;
+                break;
+            case RENDERING:
+                opt.matrix = viewport.vpmatrix() * cam->mvmatrix();
+                Rendering ( *(Culling::getInst()[camid]), opt );
+                opt.matrix = old;
+                state = END;
+                break;
+            }
+        }
+    }
+}
 
 #endif
