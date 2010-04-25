@@ -1,7 +1,7 @@
 #pragma once
 #include <vector>
 #include <list>
-#include "vec.h"
+#include "vec2.h"
 #include "mat.h"
 /*
  * @brief:  generate delaunay triangle net
@@ -198,8 +198,8 @@ void get_planetricoords ( double* planePara, double* c1, double* c2, double* c3,
 void get_genpara ( double* A, double* B, double* C, double* planePara );
 
 
-template < class Vec2, class InputIterator, class OutputIterator >
-void get_visiblepoints ( Vec2 pos, InputIterator begin, InputIterator end, OutputIterator out )
+template < class Vec2, class IndexIterator, class OutputIterator >
+void get_visiblepoints ( Vec2 pos, IndexIterator begin, IndexIterator end, OutputIterator out )
 {
   bool isBreak = false;
   typename OutputIterator::container_type part1, part2;

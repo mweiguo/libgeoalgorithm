@@ -5,7 +5,6 @@
 #include <map>
 #include "indexiter.h"
 
-
 using namespace std;
 
 class TPoint
@@ -82,7 +81,6 @@ public:
   int mTris[3];
 };
 
-
 class dBManager
 {
 public:
@@ -123,7 +121,6 @@ public:
   static std::vector<dEdge> mEdges;
   static std::vector<dTriangle> mTris;
 };
-
 
 class cDelaunay : private dBManager
 {

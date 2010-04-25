@@ -163,9 +163,12 @@ bool cDelaunay::GenDelaunay()
 
   // init outline
   mOutline.clear();
-  mOutline.push_back ( mTris[id1].mEdges[0] );
-  mOutline.push_back ( mTris[id1].mEdges[1] );
-  mOutline.push_back ( mTris[id1].mEdges[2] );
+//   mOutline.push_back ( mTris[id1].mEdges[0] );
+//   mOutline.push_back ( mTris[id1].mEdges[1] );
+//   mOutline.push_back ( mTris[id1].mEdges[2] );
+  mOutline.push_back ( mvIndex[0] );
+  mOutline.push_back ( mvIndex[1] );
+  mOutline.push_back ( mvIndex[2] );
 
   // add each point to generate trinet
   for ( size_t i=4; i<mvIndex.size(); i++ ) {
@@ -184,6 +187,9 @@ bool cDelaunay::GenDelaunay()
 bool cDelaunay::merge_point ( int pnt )
 {
   // get visible points
+  vector< indexiter<dPoint> > visiblePoints;
+  get_visiblepoints ( Vec2 pos, mOutline.begin(), mOutline.end(), back_inserter(visiblePoints) );
+
   bool backwardFind = false;
   dPoint *p1, *p2;
   size_t tmpSize=0;

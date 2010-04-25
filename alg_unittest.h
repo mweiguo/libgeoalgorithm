@@ -12,7 +12,7 @@ class algTest
 public:
   algTest() 
   {
-    //is_leftside_test();
+    is_leftside_test();
     get_visiblepoints_test ();
   }
   void is_leftside_test ()
