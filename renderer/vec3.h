@@ -125,7 +125,7 @@ inline vec3<ValueType> vec3<ValueType>::operator - ( const vec3<ValueType>& rhs 
 template < class ValueType >
 inline vec3<ValueType> vec3<ValueType>::operator / ( double rhs ) const
 { 
-    return vec3<ValueType> ( x() / rhs,  y() / rhs, z() / rhs ); 
+    return vec3<ValueType> ( (ValueType)(x() / rhs),  (ValueType)(y() / rhs), (ValueType)(z() / rhs) ); 
 }
 
 template < class ValueType >
