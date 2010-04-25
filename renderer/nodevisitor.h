@@ -17,19 +17,19 @@ class NodeVisitor
 {
 public:
     NodeVisitor(){}
-    virtual void apply ( const SGNode& node ) {}
-    virtual void apply ( const LayerNode& node ) {}
-    virtual void apply ( const Rectanglef& node ) {}
-    virtual void apply ( const TransformNode& node ) {}
-    virtual void apply ( const ArrayNode& node ) {}
-    virtual void apply ( const LODNode& node ) {}
-    virtual void apply ( SGNode& node ) {}
-    virtual void apply ( LayerNode& node ) {}
-    virtual void apply ( Rectanglef& node ) {}
-    virtual void apply ( TransformNode& node ) {}
-    virtual void apply ( ArrayNode& node ) {}
-    virtual void apply ( LODNode& node ) {}
-    virtual void apply ( PickableGroup& node ) {}
+    virtual void apply ( const SGNode& /*node*/ ) {}
+    virtual void apply ( const LayerNode& /*node*/ ) {}
+    virtual void apply ( const Rectanglef& /*node*/ ) {}
+    virtual void apply ( const TransformNode& /*node*/ ) {}
+    virtual void apply ( const ArrayNode& /*node*/ ) {}
+    virtual void apply ( const LODNode& /*node*/ ) {}
+    virtual void apply ( SGNode& /*node*/ ) {}
+    virtual void apply ( LayerNode& /*node*/ ) {}
+    virtual void apply ( Rectanglef& /*node*/ ) {}
+    virtual void apply ( TransformNode& /*node*/ ) {}
+    virtual void apply ( ArrayNode& /*node*/ ) {}
+    virtual void apply ( LODNode& /*node*/ ) {}
+    virtual void apply ( PickableGroup& /*node*/ ) {}
 };
 
 
