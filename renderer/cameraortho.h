@@ -4,11 +4,12 @@
 #include "mat4.h"
 #include "vec4.h"
 #include "bbox.h"
+#include "nodemgr.h"
 
-class CameraOrtho
+class CameraOrtho : public SGNode
 {
 public:
-    CameraOrtho (const string& name);
+    CameraOrtho (const string& name="default");
     const string& name() const { return _name; }
     void name(const string& n) { _name = n; }
     bool dirty() { return _dirty; }
@@ -34,6 +35,10 @@ public:
     mat4f& mvmatrix () { return _mvmatrix; }
     // return value in object-coord
     vec3f position () { return ( _inversemvmatrix * vec4f(0,0,0,0)).xyz(); };
+    virtual void accept ( NodeVisitor& pvisitor ) const { pvisitor.apply ( *this ); }
+    virtual void accept ( NodeVisitor& pvisitor ) { pvisitor.apply ( *this ); }
+    virtual ~CameraOrtho () {}
+
 private:
     string _name;
     mat4f _mvmatrix;
@@ -61,7 +66,7 @@ inline void CameraOrtho::zoom ( float scale )
     if ( scale == 1 )
         return;
     mat4f smat = mat4f::scale_matrix ( scale, scale, scale );
-    scale = 1.0/scale;
+    scale = 1.f/scale;
     mat4f invertsmat = mat4f::scale_matrix ( scale, scale, scale );
 
     _mvmatrix = smat * _mvmatrix;
@@ -81,4 +86,5 @@ inline void CameraOrtho::translate ( const vec3f& offset )
         dirty ( true );
 }
 
+typedef NodeMgr<CameraOrtho>      CameraMgr;
 #endif
