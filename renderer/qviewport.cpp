@@ -1,6 +1,10 @@
 #include "qviewport.h"
 
-void QViewport::QViewport( const char* title )
+#include <QResizeEvent>
+
+#include "interface.h"
+
+QViewport::QViewport( const char* title )
 {
     _x = _y = 0;
     _viewport = viewport_create ( title );

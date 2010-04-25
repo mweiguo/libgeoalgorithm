@@ -1,7 +1,9 @@
 #ifndef _QVIEWPORT_H_
 #define _QVIEWPORT_H_
 
-class QViewport : QWidget
+#include <QWidget>
+
+class QViewport : public QWidget
 {
 public:
     QViewport( const char* title );
