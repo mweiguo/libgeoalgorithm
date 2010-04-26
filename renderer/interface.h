@@ -25,6 +25,9 @@ void layer_visible ( int id, bool isVisible );
 int lod_create ( );
 void lod_delete ( int id );
 void lod_delimiters ( int id, const char* delims );
+// kdtree
+int kdtree_create ( );
+void kdtree_delete ( int id );
 // array
 int array_create ( );
 void array_delete ( int id );
