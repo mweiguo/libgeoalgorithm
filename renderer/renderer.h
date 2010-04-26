@@ -35,6 +35,7 @@
 #include "renderfunctor.h"
 #include "sombuilder.h"
 #include "rendernodecollector.h"
+#include "nodevisible.h"
 
 // io
 #include "loadmesh.h"
