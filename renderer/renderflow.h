@@ -13,89 +13,87 @@
 #include "renderfunctor.h"
 #include "kdtree.h"
 #include "nodevisible.h"
-#include "volumepicker.h"
+#include "culling.h"
+#include "nodemgr.h"
 
 using namespace std;
-class Loding : public map<int,vector<GroupNode*> >
-{
-public:
-    static Loding& getInst() 
-    {
-        static Loding inst;
-        return inst;
-    }
-    void operator() ( int camid, float v ) 
-    {
-        if ( find ( camid ) == end() )
-            (*this)[camid] = vector<GroupNode*>();
+// class Loding : public map<int,vector<GroupNode*> >
+// {
+// public:
+//     static Loding& getInst() 
+//     {
+//         static Loding inst;
+//         return inst;
+//     }
+//     void operator() ( int camid, float v ) 
+//     {
+//         if ( find ( camid ) == end() )
+//             (*this)[camid] = vector<GroupNode*>();
 
-        (*this)[camid].clear();
+//         (*this)[camid].clear();
 
-        for ( LODNodeMgr::iterator pp=LODNodeMgr::getInst().begin(); pp!=LODNodeMgr::getInst().end(); ++pp ) 
-        {
-            LODNode* lod = pp->second;
-            NodeVisible isNodeVisible;
-            if ( isNodeVisible (lod) )
-            {
-                (*this)[camid].push_back ( lod->selectPresentation (v) );
-            }
-        }
-    }
-private:
-    Loding () {}
-};
+//         for ( LODNodeMgr::iterator pp=LODNodeMgr::getInst().begin(); pp!=LODNodeMgr::getInst().end(); ++pp ) 
+//         {
+//             LODNode* lod = pp->second;
+//             NodeVisible isNodeVisible;
+//             if ( isNodeVisible (lod) )
+//             {
+//                 (*this)[camid].push_back ( lod->selectPresentation (v) );
+//             }
+//         }
+//     }
+// private:
+//     Loding () {}
+// };
 
-class Culling : public map<int, RenderList*>
-{
-public:
-    typedef RenderListMgr::iterator iterator;
-    static Culling& getInst() 
-    {
-        static Culling inst;
-        return inst;
-    }
-    void operator() ( int camid, const BBox& box, vector<GroupNode*>& groups/*Spatial object mgrs*/ ) 
-    {
-        static Rectanglef rect;
-        typedef vector<SpatialObjectMgr*> SpatialObjectMgrs;
-        RenderListMgr::iterator pp = find ( camid );
-        RenderList* renderlist=0;
-        if ( pp == end() )
-            (*this)[camid] = renderlist = new RenderList();
-        else
-            renderlist = (*pp).second;
-        renderlist->reset();
+// class Culling : public map<int, RenderList*>
+// {
+// public:
+//     typedef RenderListMgr::iterator iterator;
+//     static Culling& getInst() 
+//     {
+//         static Culling inst;
+//         return inst;
+//     }
 
-        for (  vector<GroupNode*>::iterator pp=groups.begin(); pp!=groups.end(); ++pp )
-        {
-            VolumePicker<back_insert_iterator<RenderList> > picker ( box, back_inserter(*renderlist) );
-            picker (*(*pp));
-            //(*pp)->intersect ( box, back_inserter(*renderlist) );
-//#ifdef _USESTATISTIC_
-//            qDebug ( "the culling volumn min=(%f,%f,%f), max=(%f,%f,%f)", 
-//                box.min().x(), box.min().y(), box.min().z(),
-//                box.max().x(), box.max().y(), box.max().z() );
-//            qDebug ( "%s", (*pp)->intersectstatistic ().c_str() );
-//#endif
-            //// insert scene bbox to renderlist
-            //CameraOrtho* cam = CameraMgr::getInst()[camid];
-            //if ( cam )
-            //{
-            //    BBox box = cam->viewvolume();
-            //    rect.setRect ( box.min().x(), box.min().y(), 
-            //        box.max().x() - box.min().x(),
-            //        box.max().y() - box.min().y() );
-            //    renderlist->push_back ( &rect );
-            //}
-        }
-    }
-    //     RenderListMgr::iterator findRenderList ( int camid ) { return _renderlistmgr.find ( camid ); }
-    //     iterator begin() { return _renderlistmgr.begin(); }
-    //     iterator end() { return _renderlistmgr.end(); }
-private:
-    Culling () {}
-    //     RenderListMgr _renderlistmgr;
-};
+//     void operator() ( int camid, const BBox& box, vector<GroupNode*>& groups ) 
+//     {
+//         static Rectanglef rect;
+//         typedef vector<SpatialObjectMgr*> SpatialObjectMgrs;
+//         RenderListMgr::iterator pp = find ( camid );
+//         RenderList* renderlist=0;
+//         if ( pp == end() )
+//             (*this)[camid] = renderlist = new RenderList();
+//         else
+//             renderlist = (*pp).second;
+//         renderlist->reset();
+
+//         for (  vector<GroupNode*>::iterator pp=groups.begin(); pp!=groups.end(); ++pp )
+//         {
+//             VolumePicker<back_insert_iterator<RenderList> > picker ( box, back_inserter(*renderlist) );
+//             picker (*(*pp));
+//             //(*pp)->intersect ( box, back_inserter(*renderlist) );
+// //#ifdef _USESTATISTIC_
+// //            qDebug ( "the culling volumn min=(%f,%f,%f), max=(%f,%f,%f)", 
+// //                box.min().x(), box.min().y(), box.min().z(),
+// //                box.max().x(), box.max().y(), box.max().z() );
+// //            qDebug ( "%s", (*pp)->intersectstatistic ().c_str() );
+// //#endif
+//             //// insert scene bbox to renderlist
+//             //CameraOrtho* cam = CameraMgr::getInst()[camid];
+//             //if ( cam )
+//             //{
+//             //    BBox box = cam->viewvolume();
+//             //    rect.setRect ( box.min().x(), box.min().y(), 
+//             //        box.max().x() - box.min().x(),
+//             //        box.max().y() - box.min().y() );
+//             //    renderlist->push_back ( &rect );
+//             //}
+//         }
+//     }
+// private:
+//     Culling () {}
+// };
 
 class Rendering
 {
@@ -159,7 +157,7 @@ class RenderFlow
     static const int END               = 0;
     static const int CAMERACHECKING    = 1;
     static const int VIEWPORTCHECKING  = 2;
-    static const int LODING            = 3;
+//     static const int LODING            = 3;
     static const int CULLING           = 4;
     static const int RENDERING         = 5;
 public:
@@ -176,7 +174,7 @@ public:
             case CAMERACHECKING:
                 if ( cam->dirty() )
                 {
-                    state = LODING;
+                    state = CULLING;
                     cam->dirty(false);
                 }
                 else
@@ -191,12 +189,12 @@ public:
                 else
                     state = END;
                 break;
-            case LODING:
-                Loding::getInst()( camid, cam->mvmatrix().sx() );
-                state = CULLING;
-                break;
+//             case LODING:
+//                 Loding::getInst()( camid, cam->mvmatrix().sx() );
+//                 state = CULLING;
+//                 break;
             case CULLING:
-                Culling::getInst()( camid, cam->viewvolume(), Loding::getInst()[camid] );
+                Culling::getInst()( camid, cam->viewvolume(), NodesVector::getInst()[0] );
                 cam->dirty( false );
                 state = RENDERING;
                 break;

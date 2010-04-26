@@ -2,12 +2,13 @@
 #define _VOLUMEPICKER_H_
 
 #include "nodevisitor.h"
+#include "kdtreenode.h"
 
 template <class Output>
 class VolumePicker : public NodeVisitor
 {
 public:
-    VolumePicker ( const BBox& box, Output output ) : _bbox(box), _output(output) {}
+    VolumePicker ( const BBox& box, int camid/*this is for lod filter*/, Output output ) : _bbox(box), _output(output), _camid(camid) {}
     virtual void apply ( SGNode& /*node*/ );
     virtual void apply ( LayerNode& /*node*/ );
     virtual void apply ( Rectanglef& /*node*/ );
@@ -18,8 +19,9 @@ public:
     virtual void apply ( KdTreeNode& /*node*/ );
     void operator () ( GroupNode& groupnode ) { groupnode.accept ( *this ); }
 private:
-    Output _output;
     BBox _bbox;
+    Output _output;
+    int _camid;
 };
 
 template <class Output>
@@ -70,8 +72,18 @@ void VolumePicker<Output>::apply ( ArrayNode& node )
 template <class Output>
 void VolumePicker<Output>::apply ( LODNode& node )
 {
-    for ( SGNode::iterator pp=node.begin(); pp!=node.end(); ++pp )
-        (*pp)->accept ( *this );
+    CameraMgr& cameramgr = CameraMgr::getInst();
+    CameraMgr::iterator pp = cameramgr.find ( camid );
+    if ( pp == cameramgr.end() )
+	return;
+    
+    CameraOrtho* cam = *pp;
+    SGNode* sgnode = node.selectPresentation ( cam->sx() );
+    if ( sgnode )
+    {
+	for ( SGNode::iterator pp=sgnode->begin(); pp!=sgnode->end(); ++pp )
+	    (*pp)->accept ( *this );
+    }
 }
 
 template <class Output>

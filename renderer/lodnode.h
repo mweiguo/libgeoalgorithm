@@ -16,22 +16,20 @@ public:
     LODNode () {}
     // in proj mode, v is dist
     // in ortho mode, v is scale
-    GroupNode* selectPresentation ( float v ) 
+    SGNode* selectPresentation ( float v ) 
     {
+	// validation check
+	if ( (levelDelimiters.size()+1) != size() )
+	    return NULL;
+
         typedef vector<float> DefLevel;
         DefLevel::iterator pp = upper_bound ( levelDelimiters.begin(), levelDelimiters.end(), v );
 
-        // do check first
         int cnt = pp - levelDelimiters.begin();
-        if ( size() != cnt )
-        {
-            // LOG_INFO ("LOD node's range parameter not correspond with it's children's number ");
-            return NULL;
-        }
         iterator pp1=begin();
-        for ( int i=0; i<cnt; i++ )
-            ++pp1;
-        return *pp1;
+	while ( --cnt!=0 ) ++pp1;
+	SGNode* sgnode = dynamic_cast<SGNode*>(*pp1);
+	return sgnode;
     }
     void setdelimiters ( const string& str ) 
     {
