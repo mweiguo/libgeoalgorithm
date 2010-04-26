@@ -374,7 +374,7 @@ inline bool KdTree<ObjectType>::intersect ( const BBox& box, Output out, int nod
         _buildStartClock = clock();
     }
 #endif 
-    if ( nodeidx >= _nodes.size() || nodeidx < 0 )
+    if ( nodeidx >= (int)_nodes.size() || nodeidx < 0 )
     {
 #ifdef _USESTATISTIC_
         if ( nodeidx == 0 )

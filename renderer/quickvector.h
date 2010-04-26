@@ -34,7 +34,7 @@ public:
   int size() { return _data.size(); }
 private:
   vector<T> _data;
-  int _currIdx;
+  size_t _currIdx;
 };
 
 #endif
