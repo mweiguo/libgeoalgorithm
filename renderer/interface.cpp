@@ -4,7 +4,7 @@
 #include "vec3.h"
 // camera management
 
-int create_camera ()
+int camera_create ()
 {
     return CameraMgr::getInst().addNode ();
 }

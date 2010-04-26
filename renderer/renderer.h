@@ -13,6 +13,7 @@
 #include "layernode.h"
 #include "rectitem.h"
 #include "pickablegroup.h"
+#include "kdtreenode.h"
 #include "nodemgr.h"
 
 // camera & viewport
@@ -36,6 +37,7 @@
 #include "sombuilder.h"
 #include "rendernodecollector.h"
 #include "nodevisible.h"
+#include "volumepicker.h"
 
 // io
 #include "loadmesh.h"

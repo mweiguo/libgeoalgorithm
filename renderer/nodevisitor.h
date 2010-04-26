@@ -12,6 +12,10 @@ class ArrayNode;
 class LODNode;
 class LayerNode;
 class PickableGroup;
+class DrawableNode;
+template < class T>
+class KdTreeNodeT;
+typedef KdTreeNodeT<DrawableNode*> KdTreeNode;
 
 class NodeVisitor 
 {
@@ -23,6 +27,7 @@ public:
     virtual void apply ( const TransformNode& /*node*/ ) {}
     virtual void apply ( const ArrayNode& /*node*/ ) {}
     virtual void apply ( const LODNode& /*node*/ ) {}
+    virtual void apply ( const KdTreeNode& /*node*/ ) {}
     virtual void apply ( SGNode& /*node*/ ) {}
     virtual void apply ( LayerNode& /*node*/ ) {}
     virtual void apply ( Rectanglef& /*node*/ ) {}
@@ -30,6 +35,7 @@ public:
     virtual void apply ( ArrayNode& /*node*/ ) {}
     virtual void apply ( LODNode& /*node*/ ) {}
     virtual void apply ( PickableGroup& /*node*/ ) {}
+    virtual void apply ( KdTreeNode& /*node*/ ) {}
 };
 
 

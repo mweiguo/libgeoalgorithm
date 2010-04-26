@@ -11,8 +11,8 @@ class NodesVector : public vector<SGNode*>
 public:
     static NodesVector& getInst()
     {
-	static NodesVector inst;
-	return inst;
+        static NodesVector inst;
+        return inst;
     }
 private:
     NodesVector() {}
@@ -30,11 +30,11 @@ public:
     }
     int addNode ()
     {
-	int id = NodesVector::getInst().size();
-	T* pp = NULL;
-	(*this)[id] = pp = new T();
-	NodesVector::getInst().push_back ( pp );
-	return id;
+        int id = NodesVector::getInst().size();
+        T* pp = NULL;
+        (*this)[id] = pp = new T();
+        NodesVector::getInst().push_back ( pp );
+        return id;
     }
 private:
     NodeMgr () {}

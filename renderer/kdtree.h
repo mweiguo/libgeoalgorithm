@@ -30,7 +30,7 @@ public:
 template<class ObjectType>
 class BuildKdTree;
 template<class ObjectType>
-class KdTree : public vector<ObjectType>
+class KdTree : public vector<ObjectType>//, public GroupNode
 {
     struct KdNode {
         KdNode ( int f=0, int s=0 ) : first(f), second(s) {}

@@ -9,27 +9,27 @@ using namespace std;
 /* #include <map> */
 /* #include <utility> */
 
-class SceneMgr : public vector<LayerNode*>
-{
-public:
-    /* typedef vector<LayerNode*>::iterator iterator; */
-    /* typedef vector<LayerNode*>::const_iterator const_iterator; */
-
-    /* iterator begin() { return _layers.begin(); } */
-    /* iterator end() { return _layers.end(); } */
-    /* const_iterator begin() const { return _layers.begin(); } */
-    /* const_iterator end() const { return _layers.end(); } */
-    /* bool empty () const { return _layers.empty(); } */
-    static SceneMgr& getInst()
-	{
-        static SceneMgr inst;
-        return inst;
-    }
-private:
-    SceneMgr() {}
-    /* private: */
-    /*    vector<LayerNode*> _layers; */
-};
+//class SceneMgr : public vector<LayerNode*>
+//{
+//public:
+//    /* typedef vector<LayerNode*>::iterator iterator; */
+//    /* typedef vector<LayerNode*>::const_iterator const_iterator; */
+//
+//    /* iterator begin() { return _layers.begin(); } */
+//    /* iterator end() { return _layers.end(); } */
+//    /* const_iterator begin() const { return _layers.begin(); } */
+//    /* const_iterator end() const { return _layers.end(); } */
+//    /* bool empty () const { return _layers.empty(); } */
+//    static SceneMgr& getInst()
+//    {
+//        static SceneMgr inst;
+//        return inst;
+//    }
+//private:
+//    SceneMgr() {}
+//    /* private: */
+//    /*    vector<LayerNode*> _layers; */
+//};
 
 /* class LayerMgr */
 /* { */

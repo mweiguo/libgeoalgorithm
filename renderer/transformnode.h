@@ -26,10 +26,11 @@ public:
         copy(istream_iterator<string>(iss), istream_iterator<string>(), back_inserter<vector<string> >(tokens));
         int i=0;
         for ( vector<string>::iterator pp=tokens.begin(); pp!=tokens.end(); ++pp, i++ )
-	{
-	    iss.str ( *pp );
-	    iss >> floattokens[i];
-	}
+        {
+            iss.clear();
+            iss.str ( *pp );
+            iss >> floattokens[i];
+        }
         setTranslate ( floattokens[0], floattokens[1], floattokens[2]);
     }
     void setTranslate ( float dx, float dy, float dz ) { _mat.dx ( dx ); _mat.dy(dy); _mat.dz(dz); }
@@ -43,12 +44,13 @@ public:
         copy(istream_iterator<string>(iss), istream_iterator<string>(), back_inserter<vector<string> >(tokens));
         
         int i=0;
-	for ( vector<string>::iterator pp=tokens.begin(); pp!=tokens.end(); ++pp, i++ )
-	{
-	    iss.str ( *pp );
-	    iss >> floattokens[i];
-//             floattokens[i] = atof(pp->c_str() );
-	}
+        for ( vector<string>::iterator pp=tokens.begin(); pp!=tokens.end(); ++pp, i++ )
+        {
+            iss.clear ();
+            iss.str ( *pp );
+            iss >> floattokens[i];
+            //             floattokens[i] = atof(pp->c_str() );
+        }
         setScale ( floattokens[0], floattokens[1], floattokens[2]);
     }
     void setScale ( float sx, float sy, float sz ) { _mat.sx(sx); _mat.sy(sy); _mat.sz(sz); }

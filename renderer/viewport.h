@@ -2,7 +2,7 @@
 #define _VIEWPORT_H_
 
 #include <string>
-#include <vec2.h>
+#include "vec2.h"
 #include "cameraortho.h"
 #include "nodemgr.h"
 
@@ -22,7 +22,7 @@ public:
     bool dirty() { return _dirty; }
     void dirty( bool v ) { _dirty = v; }
     Viewport ( const string& name="default", int x=0, int y=0, int w=400, int h=300 ) : 
-	_name(name), _pos(x,y), _size(w,h) 
+    _name(name), _pos(x,y), _size(w,h) 
     {
         _dirty = true;
         //attachcamera ( CameraMgr::getInst().getDefaultCamera() );

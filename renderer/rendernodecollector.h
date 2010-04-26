@@ -14,6 +14,9 @@
 #include <sstream>
 using namespace std;
 
+// this class instance will change level coordinates to flat coordinates
+// and save each item to Output
+
 template<class Output>
 class RenderNodeCollector : public NodeVisitor
 {
@@ -21,6 +24,7 @@ public:
     typedef vector<DrawableNode*>::iterator iterator;
     typedef vector<DrawableNode*>::const_iterator const_iterator;
     RenderNodeCollector( Output output) : _result(output) {}
+    void operator () ( SGNode& node ) { node.accept ( *this ); }
     virtual void apply ( Rectanglef& node );
     virtual void apply ( TransformNode& node );
     virtual void apply ( ArrayNode& node );
@@ -34,7 +38,7 @@ void RenderNodeCollector<Output>::apply ( Rectanglef& node )
 {
     vec2f v = (_curmat * vec4f (0,0,0,1)).xy();
     *_result++ = new Rectanglef(v.x(), v.y(), node.w(), node.h() );
-    
+    qDebug ("rect (x, y, w, h) : rect ( %f, %f, %f, %f )", v.x(), v.y(), node.w(), node.h());
     for ( SGNode::iterator pp=node.begin(); pp!=node.end(); ++pp )
         (*pp)->accept ( *this );
 }
@@ -47,7 +51,7 @@ void RenderNodeCollector<Output>::apply ( TransformNode& node )
     for ( SGNode::iterator pp=node.begin(); pp!=node.end(); ++pp )
         (*pp)->accept ( *this );
     _curmat = oldmat;
-}
+}   
 
 template<class Output>
 void RenderNodeCollector<Output>::apply ( ArrayNode& node )

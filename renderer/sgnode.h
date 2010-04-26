@@ -10,11 +10,11 @@ using namespace std;
 
 //class NodeVisitor;
 //class DrawableNode;
-class SGNode
+class SGNode : public list<SGNode*>
 {
 public:
-    typedef list<SGNode*>::iterator iterator;
-    typedef list<SGNode*>::const_iterator const_iterator;
+    //typedef list<SGNode*>::iterator iterator;
+    //typedef list<SGNode*>::const_iterator const_iterator;
 
     SGNode() {_parent=NULL; }
     // nodes relation operations
@@ -23,7 +23,7 @@ public:
         _addChild ( pNode );
     }
     void removeChild ( SGNode* pNode ) {
-        if ( find ( _children.begin(), _children.end(), pNode ) != _children.end() ) {
+        if ( find ( begin(), end(), pNode ) != end() ) {
             pNode->_setParent ( NULL );
             _removeChild ( pNode );
         }
@@ -38,12 +38,12 @@ public:
             _setParent ( node );
         }
     }
-    // iteration
-    bool empty () { return _children.empty(); }
-    iterator begin() { return _children.begin(); }
-    iterator end() { return _children.end(); }
-    const_iterator begin() const { return _children.begin(); }
-    const_iterator end() const { return _children.end(); }
+    //// iteration
+    //bool empty () { return _children.empty(); }
+    //iterator begin() { return _children.begin(); }
+    //iterator end() { return _children.end(); }
+    //const_iterator begin() const { return _children.begin(); }
+    //const_iterator end() const { return _children.end(); }
 
     // other operations
     virtual void accept ( NodeVisitor& pvisitor ) const { pvisitor.apply ( *this ); }
@@ -53,13 +53,13 @@ public:
     //  virtual void updateRenderList ( RenderItemContainer& output ) {}
     //  virtual bool acceptTraversal ( NodeVisitor* pNodeVisitor ) { return true; }
 private:
-    void _removeChild ( SGNode* p ) { _children.remove (p); }
-    void _addChild ( SGNode* p ) { _children.push_back (p); }
+    void _removeChild ( SGNode* p ) { remove (p); }
+    void _addChild ( SGNode* p ) { push_back (p); }
     // void _removeParent ( SGNode* p ) { _parent.removeChild (p); }
     void _setParent ( SGNode* p ) { _parent=p; }
 private:
     SGNode* _parent;
-    list<SGNode*> _children;
+    //list<SGNode*> _children;
 };
 
 #endif
