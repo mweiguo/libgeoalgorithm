@@ -13,7 +13,6 @@ public:
     virtual void apply ( LayerNode& node );
     virtual void apply ( Rectanglef& node );
     virtual void apply ( TransformNode& node );
-    virtual void apply ( ArrayNode& node );
     virtual void apply ( LODNode& node );
     virtual void apply ( PickableGroup& node );
     virtual void apply ( KdTreeNode& node );
@@ -22,6 +21,7 @@ private:
     BBox _bbox;
     Output _output;
     int _camid;
+    mat4f _curmat;
 };
 
 template <class Output>
@@ -44,8 +44,9 @@ void VolumePicker<Output>::apply ( LayerNode& node )
 template <class Output>
 void VolumePicker<Output>::apply ( Rectanglef& node )
 {
-    if ( (node.x() >= _bbox.min().x()) && (node.x() <= _bbox.max().x()) &&
-        (node.y() >= _bbox.min().y()) && (node.y() <= _bbox.max().y()) )
+    vec2f v = (_curmat * vec4f (0,0,0,1)).xy();
+    if ( (v.x() >= _bbox.min().x()) && (v.x() <= _bbox.max().x()) &&
+        (v.y() >= _bbox.min().y()) && (v.y() <= _bbox.max().y()) )
         *_output++ = &node;
 
     for ( SGNode::iterator pp=node.begin(); pp!=node.end(); ++pp )
@@ -57,16 +58,12 @@ void VolumePicker<Output>::apply ( TransformNode& node )
 {
     if ( node.isVisible () )
     {
+	const mat4f& m = node.getMatrix(), oldmat = _curmat;
+	_curmat = m * _curmat;
         for ( SGNode::iterator pp=node.begin(); pp!=node.end(); ++pp )
             (*pp)->accept ( *this );
+	_curmat = oldmat;
     }
-}
-
-template <class Output>
-void VolumePicker<Output>::apply ( ArrayNode& node )
-{
-    for ( SGNode::iterator pp=node.begin(); pp!=node.end(); ++pp )
-        (*pp)->accept ( *this );
 }
 
 template <class Output>
