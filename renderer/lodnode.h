@@ -18,18 +18,21 @@ public:
     // in ortho mode, v is scale
     SGNode* selectPresentation ( float v ) 
     {
-	// validation check
-	if ( (levelDelimiters.size()+1) != size() )
-	    return NULL;
+        if ( levelDelimiters.size() == 0 && size() !=0 )
+            return front();
+
+        // validation check
+        if ( (levelDelimiters.size()+1) != size() )
+            return NULL;
 
         typedef vector<float> DefLevel;
         DefLevel::iterator pp = upper_bound ( levelDelimiters.begin(), levelDelimiters.end(), v );
 
         int cnt = pp - levelDelimiters.begin();
         iterator pp1=begin();
-	while ( --cnt!=0 ) ++pp1;
-	SGNode* sgnode = dynamic_cast<SGNode*>(*pp1);
-	return sgnode;
+        while ( --cnt!=0 ) ++pp1;
+        SGNode* sgnode = dynamic_cast<SGNode*>(*pp1);
+        return sgnode;
     }
     void setdelimiters ( const string& str ) 
     {

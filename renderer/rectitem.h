@@ -24,8 +24,8 @@ public:
     inline T h() const { return _h; }
     inline void w( T v ) { _w = v; }
     inline void h( T v ) { _h = v; }
-	inline vec2<T> lb() const { return vec2<T>(_x, _y); }
-	inline vec2<T> rt() const { return vec2<T>(_x+_w, _y+_h); }
+    inline vec2<T> lb() const { return vec2<T>(_x, _y); }
+    inline vec2<T> rt() const { return vec2<T>(_x+_w, _y+_h); }
     virtual void accept ( NodeVisitor& pvisitor ) const { pvisitor.apply ( *this ); }
     virtual void accept ( NodeVisitor& pvisitor ) { pvisitor.apply ( *this ); }
 private:

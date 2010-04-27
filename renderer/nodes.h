@@ -12,5 +12,6 @@
 #include "cameraortho.h"
 #include "viewport.h"
 #include "pickablegroup.h"
+#include "meshnode.h"
 
 #endif

@@ -12,11 +12,13 @@ public:
     static NodesVector& getInst()
     {
         static NodesVector inst;
-	inst.push_back ( new SGNode() );
         return inst;
     }
 private:
-    NodesVector() {}
+    NodesVector()
+    {
+        push_back ( new SGNode() );
+    }
 };
 
 

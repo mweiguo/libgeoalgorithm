@@ -8,24 +8,24 @@
 
 class DrawableNode : public SGNode
 {
-//public:
-//  virtual bool acceptTraversal ( NodeVisitor* pNodeVisitor );
-//  virtual void updateRenderList ( RenderItemContainer& output );
-//  virtual void render (QPainter& painter) = 0;
+    //public:
+    //  virtual bool acceptTraversal ( NodeVisitor* pNodeVisitor );
+    //  virtual void updateRenderList ( RenderItemContainer& output );
+    //  virtual void render (QPainter& painter) = 0;
 public:
-	DrawableNode() : _bRender(true) {}
-	const BBox& getBBox () const { return _bb; }
-	virtual void accept ( NodeVisitor& pvisitor ) const { pvisitor.apply ( *this ); }
+    DrawableNode() : _bRender(true) {}
+    const BBox& getBBox () const { return _bb; }
+    virtual void accept ( NodeVisitor& pvisitor ) const { pvisitor.apply ( *this ); }
     virtual void accept ( NodeVisitor& pvisitor ) { pvisitor.apply ( *this ); }
     virtual ~DrawableNode () {}
 protected:
-	BBox _bb;
-	bool _bRender;
+    BBox _bb;
+    bool _bRender;
 };
 
 //
 //
-  //void render ( const RenderOptions& opt );
+//void render ( const RenderOptions& opt );
 //
 //  mat3<float> getMatrix () { return _matrix; }
 //  void draw (QPainter& painter);

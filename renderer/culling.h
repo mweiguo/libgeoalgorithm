@@ -31,24 +31,24 @@ public:
             renderlist = (*pp).second;
         renderlist->reset();
 
-	VolumePicker<back_insert_iterator<RenderList> > picker ( box, camid, back_inserter(*renderlist) );
-	picker (*node);
-//#ifdef _USESTATISTIC_
-//            qDebug ( "the culling volumn min=(%f,%f,%f), max=(%f,%f,%f)", 
-//                box.min().x(), box.min().y(), box.min().z(),
-//                box.max().x(), box.max().y(), box.max().z() );
-//            qDebug ( "%s", (*pp)->intersectstatistic ().c_str() );
-//#endif
-	//// insert scene bbox to renderlist
-	//CameraOrtho* cam = CameraMgr::getInst()[camid];
-	//if ( cam )
-	//{
-	//    BBox box = cam->viewvolume();
-	//    rect.setRect ( box.min().x(), box.min().y(), 
-	//        box.max().x() - box.min().x(),
-	//        box.max().y() - box.min().y() );
-	//    renderlist->push_back ( &rect );
-	//}
+        VolumePicker<back_insert_iterator<RenderList> > picker ( box, camid, back_inserter(*renderlist) );
+        picker (*node);
+        //#ifdef _USESTATISTIC_
+        //            qDebug ( "the culling volumn min=(%f,%f,%f), max=(%f,%f,%f)", 
+        //                box.min().x(), box.min().y(), box.min().z(),
+        //                box.max().x(), box.max().y(), box.max().z() );
+        //            qDebug ( "%s", (*pp)->intersectstatistic ().c_str() );
+        //#endif
+        //// insert scene bbox to renderlist
+        //CameraOrtho* cam = CameraMgr::getInst()[camid];
+        //if ( cam )
+        //{
+        //    BBox box = cam->viewvolume();
+        //    rect.setRect ( box.min().x(), box.min().y(), 
+        //        box.max().x() - box.min().x(),
+        //        box.max().y() - box.min().y() );
+        //    renderlist->push_back ( &rect );
+        //}
     }
 private:
     Culling () {}

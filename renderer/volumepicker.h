@@ -9,15 +9,15 @@ class VolumePicker : public NodeVisitor
 {
 public:
     VolumePicker ( const BBox& box, int camid/*this is for lod filter*/, Output output ) : _bbox(box), _output(output), _camid(camid) {}
-    virtual void apply ( SGNode& /*node*/ );
-    virtual void apply ( LayerNode& /*node*/ );
-    virtual void apply ( Rectanglef& /*node*/ );
-    virtual void apply ( TransformNode& /*node*/ );
-    virtual void apply ( ArrayNode& /*node*/ );
-    virtual void apply ( LODNode& /*node*/ );
-    virtual void apply ( PickableGroup& /*node*/ );
-    virtual void apply ( KdTreeNode& /*node*/ );
-    void operator () ( GroupNode& groupnode ) { groupnode.accept ( *this ); }
+    virtual void apply ( SGNode& node );
+    virtual void apply ( LayerNode& node );
+    virtual void apply ( Rectanglef& node );
+    virtual void apply ( TransformNode& node );
+    virtual void apply ( ArrayNode& node );
+    virtual void apply ( LODNode& node );
+    virtual void apply ( PickableGroup& node );
+    virtual void apply ( KdTreeNode& node );
+    void operator () ( SGNode& node ) { node.accept ( *this ); }
 private:
     BBox _bbox;
     Output _output;
@@ -73,16 +73,16 @@ template <class Output>
 void VolumePicker<Output>::apply ( LODNode& node )
 {
     CameraMgr& cameramgr = CameraMgr::getInst();
-    CameraMgr::iterator pp = cameramgr.find ( camid );
+    CameraMgr::iterator pp = cameramgr.find ( _camid );
     if ( pp == cameramgr.end() )
-	return;
-    
-    CameraOrtho* cam = *pp;
-    SGNode* sgnode = node.selectPresentation ( cam->sx() );
+        return;
+
+    CameraOrtho* cam = pp->second;
+    SGNode* sgnode = node.selectPresentation ( cam->mvmatrix().sx() );
     if ( sgnode )
     {
-	for ( SGNode::iterator pp=sgnode->begin(); pp!=sgnode->end(); ++pp )
-	    (*pp)->accept ( *this );
+        for ( SGNode::iterator pp=sgnode->begin(); pp!=sgnode->end(); ++pp )
+            (*pp)->accept ( *this );
     }
 }
 
