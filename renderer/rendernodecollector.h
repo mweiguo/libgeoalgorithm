@@ -36,7 +36,7 @@ void RenderNodeCollector<Output>::apply ( Rectanglef& node )
 {
     vec2f v = (_curmat * vec4f (0,0,0,1)).xy();
     *_result++ = new Rectanglef(v.x(), v.y(), node.w(), node.h() );
-    qDebug ("rect (x, y, w, h) : rect ( %f, %f, %f, %f )", v.x(), v.y(), node.w(), node.h());
+    //qDebug ("rect (x, y, w, h) : rect ( %f, %f, %f, %f )", v.x(), v.y(), node.w(), node.h());
     for ( SGNode::iterator pp=node.begin(); pp!=node.end(); ++pp )
         (*pp)->accept ( *this );
 }

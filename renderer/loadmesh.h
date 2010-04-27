@@ -23,16 +23,12 @@ private:
     void getShapeGenParas (int index, int& s1, int& s2, int& s3, int& s4, int& s5, int& s6, int level0Cnt, int level1Cnt, int level2Cnt, int level3Cnt, int level4Cnt, int level5Cnt );
 private:
     int _root;
-    //vector<SGNode*> _temp;
-    //vector<ArrayNode*> _arraynodecache;
-    //vector<LODNode*> _lodnodecache;
-    /* OptiPolicy _opt; */
 };
 
 
 inline LoadMesh::LoadMesh ( const char* fileName/*, SGNode* node , const OptiPolicy& opt */ )// : _opt(opt)
 {
-	int clo = clock();
+    int clo = clock();
     XercesParser parser;
     XERCES_CPP_NAMESPACE::DOMDocument* doc = parser.parseFile ( fileName, false);
     if(doc == NULL)     
@@ -42,13 +38,24 @@ inline LoadMesh::LoadMesh ( const char* fileName/*, SGNode* node , const OptiPol
     if (root == NULL) 
         throw logic_error("invalid Shape Template file:");
     //char* tagName = (char*)XercesHelper::getTagName (root);
-	qDebug ( "parseFile TAKE %d clock, %f (s)", clock() - clo,  (1.0*(clock() - clo))/CLOCKS_PER_SEC );
+    qDebug ( "parseFile TAKE %d clock, %f (s)", clock() - clo,  (1.0*(clock() - clo))/CLOCKS_PER_SEC );
 
-	clo = clock();
+    clo = clock();
     _root = mesh_create ();
     add_child ( 0, _root );
     traverseNode ( root, _root );
-	qDebug ( "traverseNode TAKE %d clock, %f (s)", clock() - clo,  (1.0*(clock() - clo))/CLOCKS_PER_SEC );
+    qDebug ( "traverseNode TAKE %d clock, %f (s)", clock() - clo,  (1.0*(clock() - clo))/CLOCKS_PER_SEC );
+
+    // expand array node
+    ArrayNodeMgr& arraymgr = ArrayNodeMgr::getInst();
+    for ( ArrayNodeMgr::iterator pp=arraymgr.begin(); pp!=arraymgr.end(); ++pp )
+    {
+	ArrayNode* node = pp->second;
+	SGNode* parent = node->getParentNode();
+	node->setParent ( NULL );
+	ArrayExpander expander ( parent );
+	expander ( node );
+    }
 
     // if exists kdtree, build it
     KdTreeNodeMgr& kdtreemgr = KdTreeNodeMgr::getInst();
@@ -57,8 +64,9 @@ inline LoadMesh::LoadMesh ( const char* fileName/*, SGNode* node , const OptiPol
         KdTreeNode* node = pp->second;
         node->buildKdTree ();
     }
-	//SomBuilder sombuilder;
-	//_root->accept ( sombuilder );
+
+    //SomBuilder sombuilder;
+    //_root->accept ( sombuilder );
 }
 
 //// template<class OptiPolicy>

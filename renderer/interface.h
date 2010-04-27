@@ -25,7 +25,7 @@ void add_child ( int parent, int child );
 void remove_child ( int preant, int child );
 // mesh
 int mesh_create ();
-int mesh_delete ( int id );
+void mesh_delete ( int id );
 // layer
 int layer_create ( const char* name );
 void layer_delete ( int id );
@@ -213,7 +213,7 @@ inline int mesh_create ()
     return MeshNodeMgr::getInst().addNode ();
 }
 
-inline int mesh_delete ( int id )
+inline void mesh_delete ( int id )
 {
     MeshNodeMgr::iterator pp = MeshNodeMgr::getInst().find ( id );
     if ( pp != MeshNodeMgr::getInst().end() )
