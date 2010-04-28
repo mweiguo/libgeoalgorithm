@@ -21,11 +21,16 @@ using namespace std;
 class Rendering
 {
 public:
-    Rendering ( const RenderList& renderlist, RenderOption& opt ) {
+    Rendering ( RenderList& renderlist, RenderOption& opt ) {
         for ( RenderList::const_iterator pp=renderlist.begin(); pp!=renderlist.end(); ++pp ) {
             QtRenderFunctor func ( &opt );
             (*pp)->accept ( func );
         }
+
+	// clean up renderlist
+        for ( RenderList::const_iterator pp=renderlist.begin(); pp!=renderlist.end(); ++pp )
+	    delete *pp;
+	renderlist.reset ();
     }
 };
 
@@ -112,10 +117,6 @@ public:
                 else
                     state = END;
                 break;
-//             case LODING:
-//                 Loding::getInst()( camid, cam->mvmatrix().sx() );
-//                 state = CULLING;
-//                 break;
             case CULLING:
                 Culling::getInst()( camid, cam->viewvolume(), NodesVector::getInst()[0] );
                 cam->dirty( false );

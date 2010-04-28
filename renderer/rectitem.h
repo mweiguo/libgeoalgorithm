@@ -26,8 +26,11 @@ public:
     inline void h( T v ) { _h = v; }
     inline vec2<T> lb() const { return vec2<T>(_x, _y); }
     inline vec2<T> rt() const { return vec2<T>(_x+_w, _y+_h); }
+    inline void size( T w, T h ) { _w=w; _h=h; }
+    inline vec2<T> size() const { return vec2<T>(_w, _h); }
     virtual void accept ( NodeVisitor& pvisitor ) const { pvisitor.apply ( *this ); }
     virtual void accept ( NodeVisitor& pvisitor ) { pvisitor.apply ( *this ); }
+    ~Rectangle () {}
 private:
     T _x, _y, _w, _h;
 };

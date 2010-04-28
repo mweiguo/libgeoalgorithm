@@ -16,6 +16,7 @@ public:
     virtual void apply ( LODNode& node );
     virtual void apply ( PickableGroup& node );
     virtual void apply ( KdTreeNode& node );
+    virtual void apply ( MeshNode& node );
     void operator () ( SGNode& node ) { node.accept ( *this ); }
 private:
     BBox _bbox;
@@ -28,7 +29,7 @@ template <class Output>
 void VolumePicker<Output>::apply ( SGNode& node )
 {
     for ( SGNode::iterator pp=node.begin(); pp!=node.end(); ++pp )
-        (*pp)->accept ( *this );
+	(*pp)->accept ( *this );
 }
 
 template <class Output>
@@ -44,10 +45,13 @@ void VolumePicker<Output>::apply ( LayerNode& node )
 template <class Output>
 void VolumePicker<Output>::apply ( Rectanglef& node )
 {
-    vec2f v = (_curmat * vec4f (0,0,0,1)).xy();
-    if ( (v.x() >= _bbox.min().x()) && (v.x() <= _bbox.max().x()) &&
-        (v.y() >= _bbox.min().y()) && (v.y() <= _bbox.max().y()) )
-        *_output++ = &node;
+    vec2f pos = (_curmat * vec4f (0,0,0,1)).xy();
+
+    BBox box;
+    box.init ( vec3f(pos.x(), pos.y(), 0) );
+    box.expandby ( vec3f(pos.x()+node.w(), pos.y()+node.h(), 0 ) );
+    if ( box.isIntersect ( _bbox ) )
+        *_output++ = new Rectanglef ( pos.x(), pos.y(), node.w(), node.h() );
 
     for ( SGNode::iterator pp=node.begin(); pp!=node.end(); ++pp )
         (*pp)->accept ( *this );
@@ -97,6 +101,13 @@ template <class Output>
 void VolumePicker<Output>::apply ( KdTreeNode& node )
 {
     node.intersect ( _bbox, _output );
+}
+
+template <class Output>
+void VolumePicker<Output>::apply ( MeshNode& node )
+{
+    for ( SGNode::iterator pp=node.begin(); pp!=node.end(); ++pp )
+        (*pp)->accept ( *this );
 }
 
 #endif // _VOLUMNPICKER_H_

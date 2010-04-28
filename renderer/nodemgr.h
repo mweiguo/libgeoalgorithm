@@ -15,9 +15,9 @@ public:
         return inst;
     }
 private:
-    NodesVector()
+    NodesVector() 
     {
-        push_back ( new SGNode() );
+        push_back ( new SGNode() ); 
     }
 };
 
@@ -34,13 +34,21 @@ public:
     int addNode ()
     {
         int id = NodesVector::getInst().size();
-        T* pp = NULL;
-        (*this)[id] = pp = new T();
-        NodesVector::getInst().push_back ( pp );
+        (*this)[id] = _lastNode = new T();
+        NodesVector::getInst().push_back ( _lastNode );
         return id;
     }
+    int addNode ( const T& node )
+    {
+        int id = NodesVector::getInst().size();
+        (*this)[id] = _lastNode = new T(node);
+        NodesVector::getInst().push_back ( _lastNode );
+        return id;
+    }
+    T* lastNode () { return _lastNode; }
 private:
     NodeMgr () {}
+    T* _lastNode;
 };
 
 #endif

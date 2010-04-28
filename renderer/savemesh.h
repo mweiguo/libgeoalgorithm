@@ -16,6 +16,8 @@ public:
 	virtual void apply ( ArrayNode& node );
 	virtual void apply ( LODNode& node );
     virtual void apply ( PickableGroup& node );
+    virtual void apply ( KdTreeNode& node );
+    virtual void apply ( MeshNode& node );
 private:
 	stringstream _xmlContent;
 };
@@ -117,5 +119,22 @@ inline void SaveMesh::apply ( PickableGroup& node )
 		(*pp)->accept ( *this );
 	_xmlContent << "</pickablegroup>";
 }
+
+inline void SaveMesh::apply ( KdTreeNode& node )
+{
+	_xmlContent << "<kdtree>" ;
+	for ( SGNode::iterator pp=node.begin(); pp!=node.end(); ++pp )
+		(*pp)->accept ( *this );
+	_xmlContent << "</kdtree>";
+}
+
+inline void SaveMesh::apply ( MeshNode& node )
+{
+	_xmlContent << "<mesh>";
+	for ( SGNode::iterator pp=node.begin(); pp!=node.end(); ++pp )
+		(*pp)->accept ( *this );
+	_xmlContent << "</mesh>";
+}
+
 #endif
 

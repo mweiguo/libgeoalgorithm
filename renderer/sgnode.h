@@ -28,6 +28,12 @@ public:
             _removeChild ( pNode );
         }
     }
+    void removeAllChild ()
+    {
+        for ( iterator pp=begin(); pp!=end(); ++pp )
+            (*pp)->_setParent(NULL);
+        clear();
+    }
     SGNode* getParentNode () { return _parent; }
     void setParentNode (SGNode* node) {
         if ( node ) {

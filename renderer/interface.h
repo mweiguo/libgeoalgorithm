@@ -149,11 +149,11 @@ inline void viewport_delete ( int id )
 
 inline void viewport_geometry ( int id, int x, int y, int w, int h )
 {
-    Viewport* p = ViewportMgr::getInst()[id];
-    if ( p )
+    ViewportMgr::iterator pp = ViewportMgr::getInst().find(id);
+    if ( pp != ViewportMgr::getInst().end() )
     {
-	p->position ( x, y );
-	p->size ( w, h );
+        pp->second->position ( x, y );
+        pp->second->size ( w, h );
     }
 }
 
@@ -173,13 +173,13 @@ inline void viewport_name ( int id, const char* nm )
 
 inline void viewport_update ( int id, QPainter& painter )
 {
-    Viewport* p = ViewportMgr::getInst()[id];   
-    if ( p )
+    ViewportMgr::iterator pp = ViewportMgr::getInst().find(id);
+    if ( pp != ViewportMgr::getInst().end() )
     {
         RenderOption opt;
         opt.painter = &painter;
-        RenderFlow renderflow ( *p, opt );
-        p->update ();
+        RenderFlow renderflow ( *(pp->second), opt );
+        pp->second->update ();
     }
 }
 

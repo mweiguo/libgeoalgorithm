@@ -12,6 +12,7 @@
 #include <vector>
 #include <string>
 #include <sstream>
+#include <algorithm>
 using namespace std;
 
 class ArrayExpander : public NodeVisitor
@@ -28,34 +29,51 @@ public:
     virtual void apply ( KdTreeNode& /*node*/ );
     void operator () ( ArrayNode& node )
     {
-	//_result.reserve ( node.rowCnt() * node.columnCnt() * 8);
-	for ( int j=0; j<node.rowCnt(); j++ ) {
-	    float y = node.getVOffset ( j );
-	    for ( int k=0; k<node.columnCnt(); k++ ) {
-		float x = node.getHOffset ( k );
-		// generate new matrix & use this matrix
-		mat4f m = mat4f::translate_matrix ( x, y, 0 ), oldmat = _curmat;
-		_curmat = m * _curmat;
-		for ( SGNode::iterator pp=node.begin(); pp!=node.end(); ++pp )
-		    (*pp)->accept ( *this );
-		_curmat = oldmat;
-	    }
-	}
+        vector<SGNode*> tmpChildren;
+        copy ( node.begin(), node.end(), back_inserter(tmpChildren) );
+
+        //_result.reserve ( node.rowCnt() * node.columnCnt() * 8);
+        for ( int j=0; j<node.rowCnt(); j++ ) {
+            float y = node.getVOffset ( j );
+            for ( int k=0; k<node.columnCnt(); k++ ) {
+                float x = node.getHOffset ( k );
+                // generate new matrix & use this matrix
+                TransformNodeMgr::getInst().addNode ();
+                TransformNode* trans = TransformNodeMgr::getInst().lastNode ();
+                trans->setTranslate ( x, y, 0 );
+                _curparent->addChild ( trans );
+                SGNode* oldparent = _curparent;
+                _curparent = trans;
+
+                for ( SGNode::iterator pp=node.begin(); pp!=node.end(); ++pp )
+                    (*pp)->accept ( *this );
+
+                _curparent = oldparent;
+            }
+        }
+
+        for ( vector<SGNode*>::iterator pp=tmpChildren.begin(); pp!=tmpChildren.end(); ++pp )
+            (*pp)->setParentNode ( NULL );
     }
+    vector<KdTreeNode*>::iterator kdbegin() { return _kdtreenodes.begin(); }
+    vector<KdTreeNode*>::iterator kdend() { return _kdtreenodes.end(); }
 private:
     SGNode* _parent, * _curparent;
+    vector<KdTreeNode*> _kdtreenodes;
 };
 
-void ArrayExpander::apply ( SGNode& node )
+inline void ArrayExpander::apply ( SGNode& node )
 {
     for ( SGNode::iterator pp=node.begin(); pp!=node.end(); ++pp )
         (*pp)->accept ( *this );
 }
 
-void ArrayExpander::apply ( LayerNode& node )
+inline void ArrayExpander::apply ( LayerNode& node )
 {
-    LayerNode* layer = new LayerNode(node);
-    _curparent.addChild ( layer );
+    LayerNodeMgr::getInst().addNode ( node );
+    LayerNode* layer = LayerNodeMgr::getInst().lastNode();
+    layer->clear();
+    _curparent->addChild ( layer );
 
     SGNode* oldparent = _curparent;
     _curparent = layer;
@@ -64,10 +82,13 @@ void ArrayExpander::apply ( LayerNode& node )
     _curparent = oldparent;
 }
 
-void ArrayExpander::apply ( Rectanglef& node )
+inline void ArrayExpander::apply ( Rectanglef& node )
 {
-    Rectanglef* rc = new Rectanglef(node);
-    _curparent.addChild ( rc );
+    qDebug ( "Rectanglef" );
+    RectanglefMgr::getInst().addNode ( node );
+    Rectanglef* rc = RectanglefMgr::getInst().lastNode ();
+    rc->clear();
+    _curparent->addChild ( rc );
 
     SGNode* oldparent = _curparent;
     _curparent = rc;
@@ -76,10 +97,13 @@ void ArrayExpander::apply ( Rectanglef& node )
     _curparent = oldparent;
 }
 
-void ArrayExpander::apply ( TransformNode& node )
+inline void ArrayExpander::apply ( TransformNode& node )
 {
-    TransformNode* trans = new TransformNode(node);
-    _curparent.addChild ( trans );
+    qDebug ( "TransformNode" );
+    TransformNodeMgr::getInst().addNode ( node );
+    TransformNode* trans = TransformNodeMgr::getInst().lastNode ();
+    trans->clear();
+    _curparent->addChild ( trans );
 
     SGNode* oldparent = _curparent;
     _curparent = trans;
@@ -88,16 +112,18 @@ void ArrayExpander::apply ( TransformNode& node )
     _curparent = oldparent;
 }
 
-void ArrayExpander::apply ( ArrayNode& node )
+inline void ArrayExpander::apply ( ArrayNode& node )
 {
-    ArrayExpander expander( node->getParentNode() );
+    ArrayExpander expander( node.getParentNode() );
     expander( node );
 }
 
-void ArrayExpander::apply ( LODNode& node )
+inline void ArrayExpander::apply ( LODNode& node )
 {
-    LODNode* lod = new LODNode(node);
-    _curparent.addChild ( lod );
+    LODNodeMgr::getInst().addNode ( node );
+    LODNode* lod = LODNodeMgr::getInst().lastNode ();
+    lod->clear();
+    _curparent->addChild ( lod );
 
     SGNode* oldparent = _curparent;
     _curparent = lod;
@@ -106,10 +132,12 @@ void ArrayExpander::apply ( LODNode& node )
     _curparent = oldparent;
 }
 
-void ArrayExpander::apply ( PickableGroup& node )
+inline void ArrayExpander::apply ( PickableGroup& node )
 {
-    PickableGroup* pick = new PickableGroup(node);
-    _curparent.addChild ( pick );
+    PickableGroupMgr::getInst().addNode ( node );
+    PickableGroup* pick = PickableGroupMgr::getInst().lastNode ();
+    pick->clear();
+    _curparent->addChild ( pick );
 
     SGNode* oldparent = _curparent;
     _curparent = pick;
@@ -118,13 +146,16 @@ void ArrayExpander::apply ( PickableGroup& node )
     _curparent = oldparent;
 }
 
-void ArrayExpander::apply ( KdTreeNode& node )
+inline void ArrayExpander::apply ( KdTreeNode& node )
 {
-    KdTreeNode* kdtree = new KdTreeNode(node);
-    _curparent.addChild ( kdtree );
+    KdTreeNodeMgr::getInst().addNode ( node );
+    KdTreeNode* kdtreenode = KdTreeNodeMgr::getInst().lastNode();
+    kdtreenode->clear();
+    _curparent->addChild ( kdtreenode );
+    _kdtreenodes.push_back ( kdtreenode );
 
     SGNode* oldparent = _curparent;
-    _curparent = kdtree;
+    _curparent = kdtreenode;
     for ( SGNode::iterator pp=node.begin(); pp!=node.end(); ++pp )
         (*pp)->accept ( *this );
     _curparent = oldparent;
