@@ -476,13 +476,13 @@ inline void groupnode_props ( int id, const char* nm )
 inline int mesh_load ( const char* file )
 {
     // load mesh
-    // create transform node
-    // return transform node's id
-    return 0;
+    LoadMesh loadmesh ( file );
+    return loadmesh.root();
 }
 
 inline void mesh_unload (int id)
 {
+    UnloadMesh unloadmesh ( id );
 }
 
 inline void mesh_translate ( int id, float tx, float ty, float tz )

@@ -31,6 +31,21 @@ private:
     vector<KdTreeNode*> _kdtreenodes;  // only save top kdtreenode
 };
 
+class UnloadMesh
+{
+public:
+    UnloadMesh ( int meshid )
+    {
+	MeshNode* mesh = MeshNodeMgr::getInst().clear();
+	mesh->setParentNode ( NULL );
+
+	NodeDeleter deleter;
+	deleter ( mesh );
+
+	MeshNodeMgr::getInst().erase ( meshid );
+    }
+};
+
 inline void LoadMesh::clearall ()
 {
     vector<SGNode*> tmp;
@@ -54,7 +69,6 @@ inline void LoadMesh::clearall ()
 
 inline LoadMesh::LoadMesh ( const char* fileName/*, SGNode* node , const OptiPolicy& opt */ )// : _opt(opt)
 {
-    clearall ();
     int clo = clock();
     XercesParser parser;
     XERCES_CPP_NAMESPACE::DOMDocument* doc = parser.parseFile ( fileName, false);
