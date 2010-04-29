@@ -16,6 +16,8 @@ class DrawableNode;
 template < class T>
 class KdTreeNodeT;
 class MeshNode;
+class FontNode;
+class TextNode;
 typedef KdTreeNodeT<DrawableNode*> KdTreeNode;
 
 class NodeVisitor 
@@ -30,6 +32,8 @@ public:
     virtual void apply ( const LODNode& /*node*/ ) {}
     virtual void apply ( const KdTreeNode& /*node*/ ) {}
     virtual void apply ( const MeshNode& /*node*/ ) {}
+    virtual void apply ( const FontNode& node ) {}
+    virtual void apply ( const TextNode& node ) {}
     virtual void apply ( SGNode& /*node*/ ) {}
     virtual void apply ( LayerNode& /*node*/ ) {}
     virtual void apply ( Rectanglef& /*node*/ ) {}
@@ -39,6 +43,8 @@ public:
     virtual void apply ( PickableGroup& /*node*/ ) {}
     virtual void apply ( KdTreeNode& /*node*/ ) {}
     virtual void apply ( MeshNode& /*node*/ ) {}
+    virtual void apply ( FontNode& node ) {}
+    virtual void apply ( TextNode& node ) {}
 };
 
 

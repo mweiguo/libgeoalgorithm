@@ -17,6 +17,7 @@ class QPainter;
 void viewport_update ( int id, QPainter& painter );
 // local mesh load, treat mesh as a single object
 int mesh_load ( const char* file );
+int mesh_save ( const char* file, int meshid );
 void mesh_unload (int id);
 void mesh_translate ( int id, float tx, float ty, float tz );
 void mesh_scale ( int id, float scale );
@@ -73,28 +74,32 @@ void groupnode_props ( int id, const char* name );
 // text
 int text_create ();
 void text_delete ( int id );
+void text_string ( int id, const char* str );
+void text_font ( int id, int fontid );
 //  1     2     3
 //  4     5     6
 //  7     8     9
 void text_anchor ( int id, int anchor );
+//  1     2     3
+//  4     5     6
+//  7     8     9
+void text_justify ( int id, int justify );
 // font
 int font_create ();
 void font_delete ( int id );
 void font_family ( int id, const char* f );
-void font_size ( int id, int size );
+void font_size ( int id, float size );
 /*PLAIN = 1, BOLD = 2, ITALIC = 3, BOLDITALIC = 4*/
 void font_style ( int id, int style );
-void font_color ( int id, const char* color );
-//  1     2     3
-//  4     5     6
-//  7     8     9
-void font_justify ( int id, int justify );
+//void font_color ( int id, const char* color );
 /// temporary implementation
 #include "nodemgr.h"
 #include "nodes.h"
 #include "vec3.h"
 #include "renderfunctor.h"
 #include "renderflow.h"
+#include "savemesh.h"
+#include "loadmesh.h"
 // camera management
 
 inline int camera_create ( const char* name )
@@ -470,6 +475,153 @@ inline void groupnode_props ( int id, const char* nm )
         pp->second->name ( nm );
 }
 
+inline int text_create ()
+{
+    return TextNodeMgr::getInst().addNode ();
+}
+
+inline void text_delete ( int id )
+{
+}
+
+inline void text_string ( int id, const char* str )
+{
+    TextNodeMgr& mgr = TextNodeMgr::getInst();
+    TextNodeMgr::iterator pp = mgr.find ( id );
+    if ( pp != mgr.end() )
+        pp->second->text ( str );
+}
+
+inline void text_font ( int id, int fontid )
+{
+    TextNodeMgr& mgr = TextNodeMgr::getInst();
+    TextNodeMgr::iterator pp = mgr.find ( id );
+    if ( pp != mgr.end() )
+    {
+        FontNodeMgr::iterator pp1 = FontNodeMgr::getInst().find ( fontid );
+        if ( pp1 != FontNodeMgr::getInst().end() )
+        {
+            pp->second->fontnode ( pp1->second );
+        }
+    }
+}
+
+//  1     2     3
+//  4     5     6
+//  7     8     9
+inline void text_anchor ( int id, int anchor )
+{
+    TextNodeMgr& mgr = TextNodeMgr::getInst();
+    TextNodeMgr::iterator pp = mgr.find ( id );
+    if ( pp != mgr.end() )
+    {
+        switch ( anchor )
+        {
+        case 1:
+            pp->second->setAnchor ( TextNode::AnchorLEFT & TextNode::AnchorTOP );
+            break;
+        case 2:
+            pp->second->setAnchor ( TextNode::AnchorTOP );
+            break;
+        case 3:
+            pp->second->setAnchor ( TextNode::AnchorRIGHT & TextNode::AnchorTOP );
+            break;
+        case 4:
+            pp->second->setAnchor ( TextNode::AnchorLEFT );
+            break;
+        case 5:
+            pp->second->setAnchor ( TextNode::AnchorCENTER );
+            break;
+        case 6:
+            pp->second->setAnchor ( TextNode::AnchorRIGHT );
+            break;
+        case 7:
+            pp->second->setAnchor ( TextNode::AnchorLEFT & TextNode::AnchorBOTTOM );
+            break;
+        case 8:
+            pp->second->setAnchor ( TextNode::AnchorBOTTOM );
+            break;
+        case 9:
+            pp->second->setAnchor ( TextNode::AnchorRIGHT & TextNode::AnchorBOTTOM );
+            break;
+        }
+    }
+}
+
+//  1     2     3
+//  4     5     6
+//  7     8     9
+inline void text_justify ( int id, int justify )
+{
+    TextNodeMgr& mgr = TextNodeMgr::getInst();
+    TextNodeMgr::iterator pp = mgr.find ( id );
+    if ( pp != mgr.end() )
+    {
+        switch ( justify )
+        {
+        case 1:
+            pp->second->setAlignFlag ( TextNode::AlignLeft & TextNode::AlignTop );
+            break;
+        case 2:
+            pp->second->setAlignFlag ( TextNode::AlignTop );
+            break;
+        case 3:
+            pp->second->setAlignFlag ( TextNode::AlignRight & TextNode::AlignTop );
+            break;
+        case 4:
+            pp->second->setAlignFlag ( TextNode::AlignLeft );
+            break;
+        case 5:
+            pp->second->setAlignFlag ( TextNode::AlignCenter );
+            break;
+        case 6:
+            pp->second->setAlignFlag ( TextNode::AlignRight );
+            break;
+        case 7:
+            pp->second->setAlignFlag ( TextNode::AlignLeft & TextNode::AlignBottom );
+            break;
+        case 8:
+            pp->second->setAlignFlag ( TextNode::AlignBottom );
+            break;
+        case 9:
+            pp->second->setAlignFlag ( TextNode::AlignRight & TextNode::AlignBottom );
+            break;
+        }
+    }
+}
+
+// font
+inline int font_create ()
+{
+    return FontNodeMgr::getInst().addNode ();
+}
+
+inline void font_delete ( int id )
+{
+}
+
+inline void font_family ( int id, const char* f )
+{
+    FontNodeMgr& mgr = FontNodeMgr::getInst();
+    FontNodeMgr::iterator pp = mgr.find ( id );
+    if ( pp != mgr.end() )
+        pp->second->family ( f );
+}
+
+inline void font_size ( int id, float sz )
+{
+    FontNodeMgr& mgr = FontNodeMgr::getInst();
+    FontNodeMgr::iterator pp = mgr.find ( id );
+    if ( pp != mgr.end() )
+        pp->second->size ( sz );
+}
+
+/*PLAIN = 1, BOLD = 2, ITALIC = 3, BOLDITALIC = 4*/
+inline void font_style ( int id, int style )
+{
+}
+
+
 // root
 //   |-transform
 //        |- mesh
@@ -480,9 +632,20 @@ inline int mesh_load ( const char* file )
     return loadmesh.root();
 }
 
-inline void mesh_unload (int id)
+inline int mesh_save ( const char* file, int meshid )
 {
-    UnloadMesh unloadmesh ( id );
+    MeshNodeMgr& mgr = MeshNodeMgr::getInst();
+    MeshNodeMgr::iterator pp = mgr.find ( meshid );
+    if ( pp != mgr.end() )
+        SaveMesh saver ( file, pp->second );
+}
+
+inline void mesh_unload (int meshid)
+{
+    MeshNodeMgr& mgr = MeshNodeMgr::getInst();
+    MeshNodeMgr::iterator pp = mgr.find ( meshid );
+    if ( pp != mgr.end() )
+        UnloadMesh unloadmesh ( pp->second );
 }
 
 inline void mesh_translate ( int id, float tx, float ty, float tz )

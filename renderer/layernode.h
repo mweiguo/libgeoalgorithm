@@ -9,7 +9,7 @@ class LayerNode : public GroupNode
 {
 public:
     LayerNode ( const string& name="default" ) :GroupNode(name) {}
-    LODNode* lod() { return dynamic_cast<LODNode*>(*begin()); }
+    //LODNode* lod() { return dynamic_cast<LODNode*>(*begin()); }
     virtual void accept ( NodeVisitor& pvisitor ) const { pvisitor.apply ( *this ); }
     virtual void accept ( NodeVisitor& pvisitor ) { pvisitor.apply ( *this ); }
     virtual ~LayerNode () {}

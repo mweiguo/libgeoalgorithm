@@ -3,6 +3,7 @@
 
 #include "vec3.h"
 #include "algorithm"
+#include <sstream>
 //#include <tinylog.h>
 
 class BBox
@@ -36,10 +37,11 @@ public:
             return false;
         return true;
     }
-    void dump () {
-#ifdef _DEBUG_OUTPUT_
-        LOG_DEBUG ( "min=(%f,%f,%f)\tmax=(%f,%f,%f)", _min.x(), _min.y(), _min.z(), _max.x(), _max.y(), _max.z() );
-#endif
+    string dump () {
+        stringstream ss;
+        ss << "min=("<<_min.x()<<"," << _min.y() << "," << _min.z() << ")\tmax=(" << _max.x() << "," << _max.y() << "," << _max.z() << ")";
+        return ss.str();
+        //LOG_DEBUG ( "min=(%f,%f,%f)\tmax=(%f,%f,%f)", _min.x(), _min.y(), _min.z(), _max.x(), _max.y(), _max.z() );
     }
 private:
     vec3f _min, _max;

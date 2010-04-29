@@ -17,6 +17,8 @@ public:
     virtual void apply ( PickableGroup& node );
     virtual void apply ( KdTreeNode& node );
     virtual void apply ( MeshNode& node );
+    virtual void apply ( FontNode& node );
+    virtual void apply ( TextNode& node );
     void operator () ( SGNode& node ) { node.accept ( *this ); }
 private:
     BBox _bbox;
@@ -29,7 +31,7 @@ template <class Output>
 void VolumePicker<Output>::apply ( SGNode& node )
 {
     for ( SGNode::iterator pp=node.begin(); pp!=node.end(); ++pp )
-	(*pp)->accept ( *this );
+        (*pp)->accept ( *this );
 }
 
 template <class Output>
@@ -47,9 +49,12 @@ void VolumePicker<Output>::apply ( Rectanglef& node )
 {
     vec2f pos = (_curmat * vec4f (0,0,0,1)).xy();
 
-    BBox box;
-    box.init ( vec3f(pos.x(), pos.y(), 0) );
-    box.expandby ( vec3f(pos.x()+node.w(), pos.y()+node.h(), 0 ) );
+    BBox box = node.getBBox();
+    //box.init ( vec3f(pos.x(), pos.y(), 0) );
+    //box.expandby ( vec3f(pos.x()+node.w(), pos.y()+node.h(), 0 ) );
+    //qDebug ("rect (%f, %f, %f, %f)", pos.x(), pos.y(), node.w(), node.h());
+    //qDebug ( "%s", _bbox.dump().c_str() );
+    
     if ( box.isIntersect ( _bbox ) )
         *_output++ = new Rectanglef ( pos.x(), pos.y(), node.w(), node.h() );
 
@@ -62,11 +67,11 @@ void VolumePicker<Output>::apply ( TransformNode& node )
 {
     if ( node.isVisible () )
     {
-	const mat4f& m = node.getMatrix(), oldmat = _curmat;
-	_curmat = m * _curmat;
+        const mat4f& m = node.getMatrix(), oldmat = _curmat;
+        _curmat = m * _curmat;
         for ( SGNode::iterator pp=node.begin(); pp!=node.end(); ++pp )
             (*pp)->accept ( *this );
-	_curmat = oldmat;
+        _curmat = oldmat;
     }
 }
 
@@ -83,7 +88,9 @@ void VolumePicker<Output>::apply ( LODNode& node )
     if ( sgnode )
     {
         for ( SGNode::iterator pp=sgnode->begin(); pp!=sgnode->end(); ++pp )
+        {
             (*pp)->accept ( *this );
+        }
     }
 }
 
@@ -110,4 +117,31 @@ void VolumePicker<Output>::apply ( MeshNode& node )
         (*pp)->accept ( *this );
 }
 
+template <class Output>
+void VolumePicker<Output>::apply ( FontNode& node )
+{
+    for ( SGNode::iterator pp=node.begin(); pp!=node.end(); ++pp )
+        (*pp)->accept ( *this );
+}
+
+template <class Output>
+void VolumePicker<Output>::apply ( TextNode& node )
+{
+    vec2f pos = (_curmat * vec4f (0,0,0,1)).xy();
+
+    //qDebug ("rect (%f, %f, %f, %f)", pos.x(), pos.y(), node.w(), node.h());
+    //qDebug ( "%s", _bbox.dump().c_str() );
+
+    const BBox box = node.getBBox();
+    if ( box.isIntersect ( _bbox ) )
+    {
+        TextNode* textnode = new TextNode ( node );
+        textnode->removeAllChild ();
+        textnode->anchorPoint ( pos.x(), pos.y(), 0 );
+        *_output++ = textnode;// ( pos.x(), pos.y(), box.max().x(), box.max().y() );
+    }
+
+    for ( SGNode::iterator pp=node.begin(); pp!=node.end(); ++pp )
+        (*pp)->accept ( *this );
+}
 #endif // _VOLUMNPICKER_H_

@@ -29,17 +29,29 @@ public:
 	    AlignVCenter  = 0x80,
 	    AlignCenter   = AlignHCenter | AlignVCenter
 	};
-    TextNode ();
-    TextNode ( const string& content );
+    TextNode () : _fontnode(0) {}
+    TextNode ( const string& content ) : _content(content), _fontnode(0) {}
 
-    void content ( const string& content );
-    const string& content () { return _content; }
+    void text ( const string& content )
+    {
+        _content = content; 
+        // update bbox
+        if ( _fontnode )
+        {
+            QFont font ( _fontnode->family().c_str(), _fontnode->size(), QFont::Normal, _fontnode->italic() );
+            QFontMetricsF m ( font );
+            QSizeF sz = m.size ( Qt::TextWordWrap, content.c_str() );
+            _bb.init ( vec3f(0, 0, 0) );
+            _bb.expandby ( vec3f(sz.width(), sz.height(), 0) );
+        }
+    }
+    const string& text () { return _content; }
 
     // anchor interface
     // anchor have 9 options
-    //  .     .     .
-    //  .     .     .
-    //  .     .     .
+    //  1     2     3
+    //  4     5     6
+    //  7     8     9
     void setAnchor ( int anchorFlag ) { _anchor = anchorFlag; }
     bool isAnchorLeft () { return ( (AnchorLEFT & _anchor) != 0 ); }
     bool isAnchorHCenter () { return ( (AnchorHCENTER & _anchor) != 0 ); }
@@ -54,7 +66,11 @@ public:
 
     // bounding box display control
     //void showBoundingBox ( bool isShow );
+    FontNode* fontnode() { return _fontnode; }
+    void fontnode( FontNode* p ) { _fontnode = p; }
 
+    void anchorPoint ( float x, float y, float z ) { _anchorPoint.xyz(x,y,z); }
+    const vec3f& anchorPoint () { return _anchorPoint; }
     virtual void accept ( NodeVisitor& pvisitor ) const { pvisitor.apply ( *this ); }
     virtual void accept ( NodeVisitor& pvisitor ) { pvisitor.apply ( *this ); }
     virtual ~TextNode () {}
@@ -62,6 +78,9 @@ private:
     string _content;
     short _anchor;
     short _alignFlag;
+    FontNode* _fontnode;
+    vec3f _anchorPoint;
 };
 
+typedef NodeMgr<TextNode>        TextNodeMgr;
 #endif

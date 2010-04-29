@@ -27,10 +27,16 @@ public:
     virtual void apply ( LODNode& /*node*/ );
     virtual void apply ( PickableGroup& /*node*/ );
     virtual void apply ( KdTreeNode& /*node*/ );
+    virtual void apply ( TextNode& /*node*/ );
     void operator () ( ArrayNode& node )
     {
         vector<SGNode*> tmpChildren;
         copy ( node.begin(), node.end(), back_inserter(tmpChildren) );
+
+        GroupNodeMgr::getInst().addNode ();
+        GroupNode* group = GroupNodeMgr::getInst().lastNode ();
+        _curparent->addChild ( group );
+        _curparent = group;
 
         //_result.reserve ( node.rowCnt() * node.columnCnt() * 8);
         for ( int j=0; j<node.rowCnt(); j++ ) {
@@ -84,7 +90,6 @@ inline void ArrayExpander::apply ( LayerNode& node )
 
 inline void ArrayExpander::apply ( Rectanglef& node )
 {
-    qDebug ( "Rectanglef" );
     RectanglefMgr::getInst().addNode ( node );
     Rectanglef* rc = RectanglefMgr::getInst().lastNode ();
     rc->clear();
@@ -99,7 +104,6 @@ inline void ArrayExpander::apply ( Rectanglef& node )
 
 inline void ArrayExpander::apply ( TransformNode& node )
 {
-    qDebug ( "TransformNode" );
     TransformNodeMgr::getInst().addNode ( node );
     TransformNode* trans = TransformNodeMgr::getInst().lastNode ();
     trans->clear();
@@ -160,4 +164,19 @@ inline void ArrayExpander::apply ( KdTreeNode& node )
         (*pp)->accept ( *this );
     _curparent = oldparent;
 }
+
+inline void ArrayExpander::apply ( TextNode& node )
+{
+    TextNodeMgr::getInst().addNode ( node );
+    TextNode* textnode = TextNodeMgr::getInst().lastNode ();
+    textnode->clear();
+    _curparent->addChild ( textnode );
+
+    SGNode* oldparent = _curparent;
+    _curparent = textnode;
+    for ( SGNode::iterator pp=node.begin(); pp!=node.end(); ++pp )
+        (*pp)->accept ( *this );
+    _curparent = oldparent;
+}
+
 #endif

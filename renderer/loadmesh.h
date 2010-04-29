@@ -11,6 +11,8 @@
 //#include "sombuilder.h"
 #include "arrayexpander.h"
 #include "parentfinder.h"
+#include "nodeleter.h"
+#include "nodedumper.h"
 
 /* #include "kdtree.h" */
 class SGNode;
@@ -29,20 +31,18 @@ private:
     int _root;
     vector<ArrayNode*> _arraynodes;  // only save top arraynode
     vector<KdTreeNode*> _kdtreenodes;  // only save top kdtreenode
+    map<string,int> _defines;
 };
 
 class UnloadMesh
 {
 public:
-    UnloadMesh ( int meshid )
+    UnloadMesh ( MeshNode* mesh )
     {
-	MeshNode* mesh = MeshNodeMgr::getInst().clear();
-	mesh->setParentNode ( NULL );
+        mesh->setParentNode ( NULL );
 
-	NodeDeleter deleter;
-	deleter ( mesh );
-
-	MeshNodeMgr::getInst().erase ( meshid );
+        Nodeleter deleter;
+        deleter ( mesh );
     }
 };
 
@@ -104,14 +104,46 @@ inline LoadMesh::LoadMesh ( const char* fileName/*, SGNode* node , const OptiPol
         (*pp)->buildKdTree ();
     }
 
-    //SomBuilder sombuilder;
-    //_root->accept ( sombuilder );
+    NodeDumper dumper;
+    dumper ( MeshNodeMgr::getInst()[_root] );
+    qDebug ( "%s", dumper.dumpstring().c_str() );
 }
 
 inline void LoadMesh::traverseNode ( XERCES_CPP_NAMESPACE::DOMElement* pnode, int parent )
 {
     typedef vector<XERCES_CPP_NAMESPACE::DOMElement*> DOMElements;
     
+    DOMElements tagFonts = XercesHelper::getChildElementsByTagName ( pnode, "font" );
+    for ( DOMElements::iterator pp=tagFonts.begin(); pp!=tagFonts.end(); ++pp ) {
+        DOMElement* tagFont = static_cast<DOMElement*>(*pp);
+        int id = font_create ();
+
+        if ( XercesHelper::hasAttribute ( tagFont, "def" ) )
+        {
+            string def = (const char*)XercesHelper::getAttribute ( tagFont, "def" );
+            _defines[def] = id;
+        }
+        if ( XercesHelper::hasAttribute ( tagFont, "family" ) )
+            font_family ( id, (const char*)XercesHelper::getAttribute ( tagFont, "family" ) );
+        if ( XercesHelper::hasAttribute ( tagFont, "size" ) )
+            font_size ( id, atof((const char*)XercesHelper::getAttribute ( tagFont, "size" )) );
+        if ( XercesHelper::hasAttribute ( tagFont, "style" ) )
+        {
+            string style = (const char*)XercesHelper::getAttribute ( tagFont, "size" );
+            int istyle = 1;
+            if ( style == "bold" )
+                istyle = 2;
+            else if ( style == "italic" )
+                istyle = 3;
+            else if ( style == "bolditalic" )
+                istyle = 4;
+            font_style ( id, istyle );
+        }
+
+        add_child ( parent, id );
+        traverseNode ( tagFont, id );
+    }
+
     DOMElements tagLayers = XercesHelper::getChildElementsByTagName ( pnode, "layer" );
     for ( DOMElements::iterator pp=tagLayers.begin(); pp!=tagLayers.end(); ++pp ) {
         DOMElement* tagLayer  = static_cast<DOMElement*>(*pp);
@@ -237,6 +269,37 @@ inline void LoadMesh::traverseNode ( XERCES_CPP_NAMESPACE::DOMElement* pnode, in
 
         add_child ( parent, id );
         traverseNode ( tagRect, id );
+    }
+
+    DOMElements tagTexts = XercesHelper::getChildElementsByTagName ( pnode, "text" );
+    for ( DOMElements::iterator pp=tagTexts.begin(); pp!=tagTexts.end(); ++pp ) {
+        DOMElement* tagText = static_cast<DOMElement*>(*pp);
+        int id = text_create ();
+
+        if ( XercesHelper::hasAttribute ( tagText, "font" ) )
+        {
+            string def = (const char*)(XercesHelper::getAttribute ( tagText, "font" ));
+            // get reference & call text_font ( id, fontid );
+            map<string,int>::iterator pp = _defines.find (def);
+            if ( pp != _defines.end() )
+                text_font ( id, pp->second );
+            else
+            {
+                // log error & skip this text node
+                qDebug ("font %s can not be fonted", def );
+                //text_delete ( id );
+                continue;
+            }
+        }
+        if ( XercesHelper::hasAttribute ( tagText, "anchor" ) )
+            text_anchor ( id, atoi((const char*)XercesHelper::getAttribute ( tagText, "anchor" )));
+        if ( XercesHelper::hasAttribute ( tagText, "justify" ) )
+            text_justify ( id, atoi((const char*)XercesHelper::getAttribute ( tagText, "justify" )));
+        if ( XercesHelper::hasAttribute ( tagText, "string" ) )
+            text_string ( id, (const char*)XercesHelper::getAttribute ( tagText, "string" ));
+
+        add_child ( parent, id );
+        traverseNode ( tagText, id );
     }
 }
 

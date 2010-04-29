@@ -9,12 +9,17 @@ using namespace std;
 class FontNode : public SGNode
 {
 public:
+    FontNode ( const string& family="Courier New", int pointSize=12, bool isItalic=false ) : 
+      _family(family), _pointSize(pointSize), _isItalic(isItalic)
+      {
+      }
+
     // set font interface
-    void setFont ( const string& _family="Courier New", int pointSize=12, bool isItalic=false );
-    void family ( const string& _family );
+    void setFont ( const string& family="Courier New", int pointSize=12, bool isItalic=false );
+    void family ( const string& f ) { _family = f; }
     const string& family () { return _family; }
-    void size ( int psize ) { _pointSize = psize; }
-    int size () { return _pointSize; }
+    void size ( float psize ) { _pointSize = psize; }
+    float size () { return _pointSize; }
     void italic ( bool isItalic ) { _isItalic = isItalic; }
     bool italic () { return _isItalic; }
     // set color
@@ -22,9 +27,11 @@ public:
     const string& color () { return _color; }
 private:
     string _family;
-    int _pointSize;
+    float _pointSize;
     bool _isItalic;
     string _color;
 };
+
+typedef NodeMgr<FontNode>        FontNodeMgr;
 
 #endif
