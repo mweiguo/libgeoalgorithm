@@ -3,6 +3,9 @@
 
 #include "drawablenode.h"
 #include <string>
+#include <QFont>
+#include <QFontMetricsF>
+
 using namespace std;
 
 class TextNode : public DrawableNode
@@ -82,5 +85,5 @@ private:
     vec3f _anchorPoint;
 };
 
-typedef NodeMgr<TextNode>        TextNodeMgr;
+//typedef NodeMgr<TextNode>        TextNodeMgr;
 #endif

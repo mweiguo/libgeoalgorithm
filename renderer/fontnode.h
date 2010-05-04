@@ -32,6 +32,6 @@ private:
     string _color;
 };
 
-typedef NodeMgr<FontNode>        FontNodeMgr;
+//typedef NodeMgr<FontNode>        FontNodeMgr;
 
 #endif

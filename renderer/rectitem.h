@@ -40,8 +40,8 @@ typedef Rectangle<float>   Rectanglef;
 typedef Rectangle<int>     Rectanglei;
 typedef Rectangle<short>   Rectangles;
 
-typedef NodeMgr<Rectangled>     RectangledMgr;
-typedef NodeMgr<Rectanglef>     RectanglefMgr;
-typedef NodeMgr<Rectanglei>     RectangleiMgr;
-typedef NodeMgr<Rectangles>     RectanglesMgr;
+/* typedef NodeMgr<Rectangled>     RectangledMgr; */
+/* typedef NodeMgr<Rectanglef>     RectanglefMgr; */
+/* typedef NodeMgr<Rectanglei>     RectangleiMgr; */
+/* typedef NodeMgr<Rectangles>     RectanglesMgr; */
 #endif

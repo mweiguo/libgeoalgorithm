@@ -33,8 +33,7 @@ public:
         vector<SGNode*> tmpChildren;
         copy ( node.begin(), node.end(), back_inserter(tmpChildren) );
 
-        GroupNodeMgr::getInst().addNode ();
-        GroupNode* group = GroupNodeMgr::getInst().lastNode ();
+        GroupNode* group = new GroupNode();
         _curparent->addChild ( group );
         _curparent = group;
 
@@ -44,8 +43,7 @@ public:
             for ( int k=0; k<node.columnCnt(); k++ ) {
                 float x = node.getHOffset ( k );
                 // generate new matrix & use this matrix
-                TransformNodeMgr::getInst().addNode ();
-                TransformNode* trans = TransformNodeMgr::getInst().lastNode ();
+                TransformNode* trans = new TransformNode();
                 trans->setTranslate ( x, y, 0 );
                 _curparent->addChild ( trans );
                 SGNode* oldparent = _curparent;
@@ -76,8 +74,7 @@ inline void ArrayExpander::apply ( SGNode& node )
 
 inline void ArrayExpander::apply ( LayerNode& node )
 {
-    LayerNodeMgr::getInst().addNode ( node );
-    LayerNode* layer = LayerNodeMgr::getInst().lastNode();
+    LayerNode* layer = new LayerNode ( node );
     layer->clear();
     _curparent->addChild ( layer );
 
@@ -90,8 +87,7 @@ inline void ArrayExpander::apply ( LayerNode& node )
 
 inline void ArrayExpander::apply ( Rectanglef& node )
 {
-    RectanglefMgr::getInst().addNode ( node );
-    Rectanglef* rc = RectanglefMgr::getInst().lastNode ();
+    Rectanglef* rc = new Rectanglef ( node );
     rc->clear();
     _curparent->addChild ( rc );
 
@@ -104,8 +100,7 @@ inline void ArrayExpander::apply ( Rectanglef& node )
 
 inline void ArrayExpander::apply ( TransformNode& node )
 {
-    TransformNodeMgr::getInst().addNode ( node );
-    TransformNode* trans = TransformNodeMgr::getInst().lastNode ();
+    TransformNode* trans = new TransformNode ( node );
     trans->clear();
     _curparent->addChild ( trans );
 
@@ -124,8 +119,7 @@ inline void ArrayExpander::apply ( ArrayNode& node )
 
 inline void ArrayExpander::apply ( LODNode& node )
 {
-    LODNodeMgr::getInst().addNode ( node );
-    LODNode* lod = LODNodeMgr::getInst().lastNode ();
+    LODNode* lod = new LODNode ( node );
     lod->clear();
     _curparent->addChild ( lod );
 
@@ -138,8 +132,7 @@ inline void ArrayExpander::apply ( LODNode& node )
 
 inline void ArrayExpander::apply ( PickableGroup& node )
 {
-    PickableGroupMgr::getInst().addNode ( node );
-    PickableGroup* pick = PickableGroupMgr::getInst().lastNode ();
+    PickableGroup* pick = new PickableGroup ( node );
     pick->clear();
     _curparent->addChild ( pick );
 
@@ -152,8 +145,7 @@ inline void ArrayExpander::apply ( PickableGroup& node )
 
 inline void ArrayExpander::apply ( KdTreeNode& node )
 {
-    KdTreeNodeMgr::getInst().addNode ( node );
-    KdTreeNode* kdtreenode = KdTreeNodeMgr::getInst().lastNode();
+    KdTreeNode* kdtreenode = new KdTreeNode ( node );
     kdtreenode->clear();
     _curparent->addChild ( kdtreenode );
     _kdtreenodes.push_back ( kdtreenode );
@@ -167,8 +159,7 @@ inline void ArrayExpander::apply ( KdTreeNode& node )
 
 inline void ArrayExpander::apply ( TextNode& node )
 {
-    TextNodeMgr::getInst().addNode ( node );
-    TextNode* textnode = TextNodeMgr::getInst().lastNode ();
+    TextNode* textnode = new TextNode ( node );
     textnode->clear();
     _curparent->addChild ( textnode );
 

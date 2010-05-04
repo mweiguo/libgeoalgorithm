@@ -1,7 +1,7 @@
 #ifndef _PARENT_FINDER_H_
 #define _PARENT_FINDER_H_
 
-#include "nodevisitor.h"
+#include "parentvisitor.h"
 struct FalseType { enum { value = false }; };
 struct TrueType { enum { value = true }; };
 
@@ -18,20 +18,25 @@ struct IsSame<T,T>
 };
 
 template < class T >
-class ParentFinder : public NodeVisitor
+class ParentFinder : public ParentVisitor
 {
 public:
     ParentFinder() : _target(0) {}
     virtual void apply ( LayerNode& node );
-    virtual void apply ( PickableGroup& node );
     virtual void apply ( Rectanglef& node );
     virtual void apply ( TransformNode& node );
     virtual void apply ( ArrayNode& node );
     virtual void apply ( LODNode& node );
+    virtual void apply ( PickableGroup& node );
     virtual void apply ( KdTreeNode& node );
+    virtual void apply ( MeshNode& node );
+    virtual void apply ( FontNode& node );
+    virtual void apply ( TextNode& node );
     T* operator () ( SGNode* p ) 
     {
-        p->accept ( *this );
+        SGNode* parent = p->getParentNode();
+        if ( parent )
+            parent->accept ( *this );
         return _target;
     }
 private:
@@ -42,20 +47,7 @@ template < class T >
 void ParentFinder<T>::apply ( LayerNode& node )
 {
     if ( false == IsSame<T, LayerNode>::Result::value ) {
-        SGNode* parent = node.getParentNode();
-        if ( parent )
-            parent->accept ( *this );
-    } else 
-        _target = dynamic_cast<T*>(&node);
-}
-
-template < class T >
-void ParentFinder<T>::apply ( PickableGroup& node )
-{
-    if ( false == IsSame<T, PickableGroup>::Result::value ) {
-        SGNode* parent = node.getParentNode();
-        if ( parent )
-            parent->accept ( *this );
+	ParentVisitor::apply ( node );
     } else 
         _target = dynamic_cast<T*>(&node);
 }
@@ -64,9 +56,7 @@ template < class T >
 void ParentFinder<T>::apply ( Rectanglef& node )
 {
     if ( false == IsSame<T, Rectanglef>::Result::value ) {
-        SGNode* parent = node.getParentNode();
-        if ( parent )
-            parent->accept ( *this );
+	ParentVisitor::apply ( node );
     } else 
         _target = dynamic_cast<T*>(&node);
 }
@@ -75,9 +65,7 @@ template < class T >
 void ParentFinder<T>::apply ( TransformNode& node )
 {
     if ( false == IsSame<T, TransformNode>::Result::value ) {
-        SGNode* parent = node.getParentNode();
-        if ( parent )
-            parent->accept ( *this );
+	ParentVisitor::apply ( node );
     } else 
         _target = dynamic_cast<T*>(&node);
 }
@@ -86,9 +74,7 @@ template < class T >
 void ParentFinder<T>::apply ( ArrayNode& node )
 {
     if ( false == IsSame<T, ArrayNode>::Result::value ) {
-        SGNode* parent = node.getParentNode();
-        if ( parent )
-            parent->accept ( *this );
+	ParentVisitor::apply ( node );
     } else 
         _target = dynamic_cast<T*>(&node);
 }
@@ -97,9 +83,16 @@ template < class T >
 void ParentFinder<T>::apply ( LODNode& node )
 {
     if ( false == IsSame<T, LODNode>::Result::value ) {
-        SGNode* parent = node.getParentNode();
-        if ( parent )
-            parent->accept ( *this );
+	ParentVisitor::apply ( node );
+    } else 
+        _target = dynamic_cast<T*>(&node);
+}
+
+template < class T >
+void ParentFinder<T>::apply ( PickableGroup& node )
+{
+    if ( false == IsSame<T, PickableGroup>::Result::value ) {
+	ParentVisitor::apply ( node );
     } else 
         _target = dynamic_cast<T*>(&node);
 }
@@ -108,11 +101,36 @@ template < class T >
 void ParentFinder<T>::apply ( KdTreeNode& node )
 {
     if ( false == IsSame<T, KdTreeNode>::Result::value ) {
-        SGNode* parent = node.getParentNode();
-        if ( parent )
-            parent->accept ( *this );
+	ParentVisitor::apply ( node );
     } else 
         _target = dynamic_cast<T*>(&node);
 }
 
-#endif
+template < class T >
+void ParentFinder<T>::apply ( MeshNode& node )
+{
+    if ( false == IsSame<T, KdTreeNode>::Result::value ) {
+	ParentVisitor::apply ( node );
+    } else 
+        _target = dynamic_cast<T*>(&node);
+}
+
+template < class T >
+void ParentFinder<T>::apply ( FontNode& node )
+{
+    if ( false == IsSame<T, KdTreeNode>::Result::value ) {
+	ParentVisitor::apply ( node );
+    } else 
+        _target = dynamic_cast<T*>(&node);
+}
+
+template < class T >
+void ParentFinder<T>::apply ( TextNode& node )
+{
+    if ( false == IsSame<T, KdTreeNode>::Result::value ) {
+	ParentVisitor::apply ( node );
+    } else 
+        _target = dynamic_cast<T*>(&node);
+}
+
+#endif  // _PARENT_FINDER_H_

@@ -13,5 +13,8 @@
 #include "viewport.h"
 #include "pickablegroup.h"
 #include "meshnode.h"
+#include "fontnode.h"
+#include "textnode.h"
+#include "kdtreenode.h"
 
 #endif

@@ -28,6 +28,6 @@ private:
 };
 
 typedef KdTreeNodeT<DrawableNode*> KdTreeNode;
-typedef NodeMgr<KdTreeNode>        KdTreeNodeMgr;
+//typedef NodeMgr<KdTreeNode>        KdTreeNodeMgr;
 
 #endif // _KDTREE_NODE_H_

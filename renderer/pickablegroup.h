@@ -13,6 +13,6 @@ public:
     virtual ~PickableGroup () {}
 };
 
-typedef NodeMgr<PickableGroup>  PickableGroupMgr;
+//typedef NodeMgr<PickableGroup>  PickableGroupMgr;
 
 #endif

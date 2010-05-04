@@ -10,12 +10,13 @@ class Viewport : public SGNode
 {
 public:
     void attachcamera ( int camid ) {_camid = camid;}
-    CameraOrtho* camera() const { 
-        CameraMgr& mgr = CameraMgr::getInst();
-        CameraMgr::iterator pp = mgr.find (_camid);
-        if ( pp == mgr.end() )
-            return NULL;
-        return pp->second;
+    CameraOrtho* camera() const {
+        return NodeMgr::getInst().getNodePtr<CameraOrtho>(_camid);
+        //CameraMgr& mgr = CameraMgr::getInst();
+        //CameraMgr::iterator pp = mgr.find (_camid);
+        //if ( pp == mgr.end() )
+        //    return NULL;
+        //return pp->second;
     }
     int cameraid() const { return _camid; }
     //RnederList& getRenderList ( const string& cameraname );
@@ -62,7 +63,7 @@ private:
     mat4f _vpmatrix;
 };
 
-typedef NodeMgr<Viewport>       ViewportMgr;
+//typedef NodeMgr<Viewport>       ViewportMgr;
 
 #endif
 

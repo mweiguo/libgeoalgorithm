@@ -12,5 +12,5 @@ public:
     virtual ~MeshNode () {}
 };
 
-typedef NodeMgr<MeshNode>      MeshNodeMgr;
+//typedef NodeMgr<MeshNode>      MeshNodeMgr;
 #endif

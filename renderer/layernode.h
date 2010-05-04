@@ -44,6 +44,6 @@ public:
 //private:
 //    LayerNodeMgr () {}
 //};
-typedef NodeMgr<LayerNode>      LayerNodeMgr;
+//typedef NodeMgr<LayerNode>      LayerNodeMgr;
 
 #endif

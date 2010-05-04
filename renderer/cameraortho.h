@@ -86,5 +86,5 @@ inline void CameraOrtho::translate ( const vec3f& offset )
         dirty ( true );
 }
 
-typedef NodeMgr<CameraOrtho>      CameraMgr;
+//typedef NodeMgr<CameraOrtho>      CameraMgr;
 #endif

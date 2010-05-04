@@ -17,6 +17,6 @@ private:
     string _groupname;
 };
 
-typedef NodeMgr<GroupNode>      GroupNodeMgr;
+//typedef NodeMgr<GroupNode>      GroupNodeMgr;
 #endif
 

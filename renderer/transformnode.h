@@ -63,5 +63,5 @@ private:
     mat4f _mat;
 };
 
-typedef NodeMgr<TransformNode>  TransformNodeMgr;
+//typedef NodeMgr<TransformNode>  TransformNodeMgr;
 #endif

@@ -18,6 +18,6 @@ private:
     bool _isVisible;
 };
 
-typedef NodeMgr<SwitchNode>     SwitchNodeMgr;
+//typedef NodeMgr<SwitchNode>     SwitchNodeMgr;
 
 #endif

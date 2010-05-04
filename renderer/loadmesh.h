@@ -48,23 +48,23 @@ public:
 
 inline void LoadMesh::clearall ()
 {
-    vector<SGNode*> tmp;
-    copy ( NodesVector::getInst().begin()+1, NodesVector::getInst().end(), back_inserter(tmp) );
-    NodesVector::getInst()[0]->removeAllChild ();
-    NodesVector::getInst().erase ( NodesVector::getInst().begin()+1, NodesVector::getInst().end() );
-    for ( vector<SGNode*>::iterator pp=tmp.begin(); pp!=tmp.end(); ++pp )
-        delete *pp;
-    
-    LayerNodeMgr::getInst().clear();
-    RectanglefMgr::getInst().clear();
-    TransformNodeMgr::getInst().clear();
-    ArrayNodeMgr::getInst().clear();
-    LODNodeMgr::getInst().clear();
-    PickableGroupMgr::getInst().clear();
-    KdTreeNodeMgr::getInst().clear();
-    MeshNodeMgr::getInst().clear();
-    ViewportMgr::getInst().clear();
-    CameraMgr::getInst().clear();
+    //vector<SGNode*> tmp;
+    //copy ( NodesVector::getInst().begin()+1, NodesVector::getInst().end(), back_inserter(tmp) );
+    //NodesVector::getInst()[0]->removeAllChild ();
+    //NodesVector::getInst().erase ( NodesVector::getInst().begin()+1, NodesVector::getInst().end() );
+    //for ( vector<SGNode*>::iterator pp=tmp.begin(); pp!=tmp.end(); ++pp )
+    //    delete *pp;
+    //
+    //LayerNodeMgr::getInst().clear();
+    //RectanglefMgr::getInst().clear();
+    //TransformNodeMgr::getInst().clear();
+    //ArrayNodeMgr::getInst().clear();
+    //LODNodeMgr::getInst().clear();
+    //PickableGroupMgr::getInst().clear();
+    //KdTreeNodeMgr::getInst().clear();
+    //MeshNodeMgr::getInst().clear();
+    //ViewportMgr::getInst().clear();
+    //CameraMgr::getInst().clear();
 }
 
 inline LoadMesh::LoadMesh ( const char* fileName/*, SGNode* node , const OptiPolicy& opt */ )// : _opt(opt)
@@ -105,14 +105,14 @@ inline LoadMesh::LoadMesh ( const char* fileName/*, SGNode* node , const OptiPol
     }
 
     NodeDumper dumper;
-    dumper ( MeshNodeMgr::getInst()[_root] );
+    dumper ( NodeMgr::getInst()[_root] );
     qDebug ( "%s", dumper.dumpstring().c_str() );
 }
 
 inline void LoadMesh::traverseNode ( XERCES_CPP_NAMESPACE::DOMElement* pnode, int parent )
 {
     typedef vector<XERCES_CPP_NAMESPACE::DOMElement*> DOMElements;
-    
+
     DOMElements tagFonts = XercesHelper::getChildElementsByTagName ( pnode, "font" );
     for ( DOMElements::iterator pp=tagFonts.begin(); pp!=tagFonts.end(); ++pp ) {
         DOMElement* tagFont = static_cast<DOMElement*>(*pp);
@@ -187,11 +187,11 @@ inline void LoadMesh::traverseNode ( XERCES_CPP_NAMESPACE::DOMElement* pnode, in
     for ( DOMElements::iterator pp=tagKdTrees.begin(); pp!=tagKdTrees.end(); ++pp ) {
         DOMElement* tagKdTree  = static_cast<DOMElement*>(*pp);
         int id = kdtree_create();
-	KdTreeNode* kdtreenode = KdTreeNodeMgr::getInst()[id];
-	ParentFinder<KdTreeNode> finder;
-	if ( NULL == finder ( kdtreenode ) )
-	    _kdtreenodes.push_back ( kdtreenode );
-	_kdtreenodes.push_back ( kdtreenode );
+        KdTreeNode* kdtreenode = NodeMgr::getInst().getNodePtr<KdTreeNode>(id);
+        ParentFinder<KdTreeNode> finder;
+        if ( NULL == finder ( kdtreenode ) )
+            _kdtreenodes.push_back ( kdtreenode );
+        _kdtreenodes.push_back ( kdtreenode );
         add_child ( parent, id );
         traverseNode ( tagKdTree, id );
     }
@@ -216,10 +216,10 @@ inline void LoadMesh::traverseNode ( XERCES_CPP_NAMESPACE::DOMElement* pnode, in
     for ( DOMElements::iterator pp=tagArrays.begin(); pp!=tagArrays.end(); ++pp ) {
         DOMElement* tagArray = static_cast<DOMElement*>( *pp );
         int id = array_create();
-	ArrayNode* arraynode = ArrayNodeMgr::getInst()[id];
-	ParentFinder<KdTreeNode> finder;
-	if ( NULL == finder ( arraynode ) )
-	    _arraynodes.push_back ( arraynode );
+        ArrayNode* arraynode = NodeMgr::getInst().getNodePtr<ArrayNode>(id);
+        ParentFinder<KdTreeNode> finder;
+        if ( NULL == finder ( arraynode ) )
+            _arraynodes.push_back ( arraynode );
 
         if ( XercesHelper::hasAttribute ( tagArray, "cnty" ) ) array_rowcnt ( id, atoi((char*)XercesHelper::getAttribute( tagArray, "cnty" )) );
         if ( XercesHelper::hasAttribute ( tagArray, "cntx" ) ) array_columncnt ( id, atoi((char*)XercesHelper::getAttribute( tagArray, "cntx" )) );

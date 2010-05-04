@@ -118,7 +118,7 @@ public:
                     state = END;
                 break;
             case CULLING:
-                Culling::getInst()( camid, cam->viewvolume(), NodesVector::getInst()[0] );
+                Culling::getInst()( camid, cam->viewvolume(), NodeMgr::getInst().root() );
                 cam->dirty( false );
                 state = RENDERING;
                 break;

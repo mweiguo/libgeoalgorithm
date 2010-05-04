@@ -106,5 +106,5 @@ inline void ArrayNode::getShapeGenParas (int index, int& s0, int& s1, int& s2, i
     //s6 = index / level5Cnt;
 }
 
-typedef NodeMgr<ArrayNode>        ArrayNodeMgr;
+//typedef NodeMgr<ArrayNode>        ArrayNodeMgr;
 #endif

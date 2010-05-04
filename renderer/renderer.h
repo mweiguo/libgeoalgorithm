@@ -33,6 +33,7 @@
 
 // functors
 #include "nodevisitor.h"
+#include "childvisitor.h"
 #include "renderfunctor.h"
 #include "sombuilder.h"
 #include "rendernodecollector.h"
@@ -43,6 +44,7 @@
 #include "loadmesh.h"
 #include "loadnodes.h"
 #include "savemesh.h"
+#include "savepickable.h"
 
 // render process
 #include "renderflow.h"

@@ -97,5 +97,5 @@ private:
 //    }
 //}
 //
-typedef NodeMgr<LODNode>        LODNodeMgr;
+//typedef NodeMgr<LODNode>        LODNodeMgr;
 #endif

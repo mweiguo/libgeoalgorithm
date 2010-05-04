@@ -78,18 +78,16 @@ void VolumePicker<Output>::apply ( TransformNode& node )
 template <class Output>
 void VolumePicker<Output>::apply ( LODNode& node )
 {
-    CameraMgr& cameramgr = CameraMgr::getInst();
-    CameraMgr::iterator pp = cameramgr.find ( _camid );
-    if ( pp == cameramgr.end() )
-        return;
-
-    CameraOrtho* cam = pp->second;
-    SGNode* sgnode = node.selectPresentation ( cam->mvmatrix().sx() );
-    if ( sgnode )
+    CameraOrtho* cam = NodeMgr::getInst().getNodePtr<CameraOrtho>(_camid);
+    if ( cam )
     {
-        for ( SGNode::iterator pp=sgnode->begin(); pp!=sgnode->end(); ++pp )
+        SGNode* sgnode = node.selectPresentation ( cam->mvmatrix().sx() );
+        if ( sgnode )
         {
-            (*pp)->accept ( *this );
+            for ( SGNode::iterator pp=sgnode->begin(); pp!=sgnode->end(); ++pp )
+            {
+                (*pp)->accept ( *this );
+            }
         }
     }
 }
