@@ -1,5 +1,6 @@
 #ifndef _INTERFACE_H
 #define _INTERFACE_H
+#include "qviewport.h"
 // camera management
 int camera_create ( const char* name );
 void camera_translate ( int id, float tx, float ty, float tz );
@@ -11,8 +12,13 @@ int viewport_create ( const char* name );
 void viewport_geometry ( int id, int x, int y, int w, int h );
 void viewport_attachcamera ( int id, int camid );
 void viewport_name ( int id, const char* name );
+void viewport_dirty ( int id );
 class QPainter;
 void viewport_update ( int id, QPainter& painter );
+// window
+void viewport_add ( int id );
+void viewport_delete ( int id );
+void update ( int id );
 // local mesh load, treat mesh as a single object
 int mesh_load ( const char* file );
 void mesh_save ( const char* file, int meshid );
@@ -165,6 +171,29 @@ inline void viewport_update ( int id, QPainter& painter )
         RenderFlow renderflow ( *p, opt );
         p->update ();
     }
+}
+
+inline void viewport_dirty ( int id )
+{
+    Viewport* p = NodeMgr::getInst().getNodePtr<Viewport> (id);
+    if ( p )
+	p->dirty ( true );
+}
+
+inline void viewport_add ( int id )
+{
+    QViewport::getInst().add_viewport( id );
+}
+
+inline void viewport_delete ( int id )
+{
+    QViewport::getInst().remove_viewport( id );
+}
+
+inline void update ( int id )
+{
+    viewport_dirty ( id );
+    QViewport::getInst().update();
 }
 
 inline void add_child ( int parent, int child )
@@ -522,8 +551,9 @@ inline void font_style ( int id, int style )
 inline int mesh_load ( const char* file )
 {
     // load mesh
-    LoadMesh loadmesh ( file );
-    return loadmesh.root();
+/*     LoadMesh loadmesh ( file ); */
+/*     return loadmesh.root(); */
+    return 0;
 }
 
 inline void mesh_save ( const char* file, int meshid )
@@ -535,9 +565,9 @@ inline void mesh_save ( const char* file, int meshid )
 
 inline void mesh_unload (int meshid)
 {
-    MeshNode* node = NodeMgr::getInst().getNodePtr<MeshNode>(meshid);
-    if ( node )
-        UnloadMesh unloadmesh ( node );
+/*     MeshNode* node = NodeMgr::getInst().getNodePtr<MeshNode>(meshid); */
+/*     if ( node ) */
+/*         UnloadMesh unloadmesh ( node ); */
 }
 
 inline void mesh_translate ( int id, float tx, float ty, float tz )
