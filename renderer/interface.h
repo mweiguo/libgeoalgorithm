@@ -1,6 +1,5 @@
 #ifndef _INTERFACE_H
 #define _INTERFACE_H
-
 // camera management
 int camera_create ( const char* name );
 void camera_translate ( int id, float tx, float ty, float tz );
@@ -16,7 +15,7 @@ class QPainter;
 void viewport_update ( int id, QPainter& painter );
 // local mesh load, treat mesh as a single object
 int mesh_load ( const char* file );
-int mesh_save ( const char* file, int meshid );
+void mesh_save ( const char* file, int meshid );
 void mesh_unload (int id);
 void mesh_translate ( int id, float tx, float ty, float tz );
 void mesh_scale ( int id, float scale );
@@ -87,7 +86,7 @@ void font_style ( int id, int style );
 #include "renderfunctor.h"
 #include "renderflow.h"
 #include "savemesh.h"
-#include "loadmesh.h"
+//#include "loadmesh.h"
 // camera management
 
 inline int camera_create ( const char* name )
@@ -527,7 +526,7 @@ inline int mesh_load ( const char* file )
     return loadmesh.root();
 }
 
-inline int mesh_save ( const char* file, int meshid )
+inline void mesh_save ( const char* file, int meshid )
 {
     MeshNode* node = NodeMgr::getInst().getNodePtr<MeshNode>(meshid);
     if ( node )
