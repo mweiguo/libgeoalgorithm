@@ -88,6 +88,8 @@ inline LoadMesh::LoadMesh ( const char* fileName/*, SGNode* node , const OptiPol
     qDebug ( "traverseNode TAKE %d clock, %f (s)", clock() - clo,  (1.0*(clock() - clo))/CLOCKS_PER_SEC );
 
     // expand array node
+        clo = clock();
+    int ii = 0;
     for ( vector<ArrayNode*>::iterator pp=_arraynodes.begin(); pp!=_arraynodes.end(); ++pp )
     {
         ArrayNode* node = *pp;
@@ -95,18 +97,21 @@ inline LoadMesh::LoadMesh ( const char* fileName/*, SGNode* node , const OptiPol
         node->setParentNode ( NULL );
         ArrayExpander expander ( parent );
         expander ( *(*pp) );
-        copy ( expander.kdbegin(), expander.kdend(), back_inserter(_kdtreenodes) );
+        ii++;
     }
+        qDebug ( "%d array expander TAKE %d clock, %f (s)", ii, clock() - clo,  (1.0*(clock() - clo))/CLOCKS_PER_SEC );
 
+    clo = clock();
     // if exists kdtree, build it
     for ( vector<KdTreeNode*>::iterator pp=_kdtreenodes.begin(); pp!=_kdtreenodes.end(); ++pp )
     {
         (*pp)->buildKdTree ();
     }
+    qDebug ( "build kdtree TAKE %d clock, %f (s)", clock() - clo,  (1.0*(clock() - clo))/CLOCKS_PER_SEC );
 
-    NodeDumper dumper;
-    dumper ( NodeMgr::getInst()[_root] );
-    qDebug ( "%s", dumper.dumpstring().c_str() );
+    //NodeDumper dumper;
+    //dumper ( NodeMgr::getInst()[_root] );
+    //qDebug ( "%s", dumper.dumpstring().c_str() );
 }
 
 inline void LoadMesh::traverseNode ( XERCES_CPP_NAMESPACE::DOMElement* pnode, int parent )
@@ -187,12 +192,12 @@ inline void LoadMesh::traverseNode ( XERCES_CPP_NAMESPACE::DOMElement* pnode, in
     for ( DOMElements::iterator pp=tagKdTrees.begin(); pp!=tagKdTrees.end(); ++pp ) {
         DOMElement* tagKdTree  = static_cast<DOMElement*>(*pp);
         int id = kdtree_create();
+        add_child ( parent, id );
         KdTreeNode* kdtreenode = NodeMgr::getInst().getNodePtr<KdTreeNode>(id);
         ParentFinder<KdTreeNode> finder;
         if ( NULL == finder ( kdtreenode ) )
             _kdtreenodes.push_back ( kdtreenode );
         _kdtreenodes.push_back ( kdtreenode );
-        add_child ( parent, id );
         traverseNode ( tagKdTree, id );
     }
 
@@ -216,10 +221,6 @@ inline void LoadMesh::traverseNode ( XERCES_CPP_NAMESPACE::DOMElement* pnode, in
     for ( DOMElements::iterator pp=tagArrays.begin(); pp!=tagArrays.end(); ++pp ) {
         DOMElement* tagArray = static_cast<DOMElement*>( *pp );
         int id = array_create();
-        ArrayNode* arraynode = NodeMgr::getInst().getNodePtr<ArrayNode>(id);
-        ParentFinder<KdTreeNode> finder;
-        if ( NULL == finder ( arraynode ) )
-            _arraynodes.push_back ( arraynode );
 
         if ( XercesHelper::hasAttribute ( tagArray, "cnty" ) ) array_rowcnt ( id, atoi((char*)XercesHelper::getAttribute( tagArray, "cnty" )) );
         if ( XercesHelper::hasAttribute ( tagArray, "cntx" ) ) array_columncnt ( id, atoi((char*)XercesHelper::getAttribute( tagArray, "cntx" )) );
@@ -249,6 +250,11 @@ inline void LoadMesh::traverseNode ( XERCES_CPP_NAMESPACE::DOMElement* pnode, in
         if ( XercesHelper::hasAttribute ( tagArray, "spacey6" ) ) array_marginy ( id, 5, atof((char*)XercesHelper::getAttribute( tagArray, "spacey6" )) );
 
         add_child ( parent, id );
+        ArrayNode* arraynode = NodeMgr::getInst().getNodePtr<ArrayNode>(id);
+        ParentFinder<ArrayNode> finder;
+        if ( NULL == finder ( arraynode ) )
+            _arraynodes.push_back ( arraynode );
+
         traverseNode ( tagArray, id );
     }
 
@@ -301,6 +307,34 @@ inline void LoadMesh::traverseNode ( XERCES_CPP_NAMESPACE::DOMElement* pnode, in
         add_child ( parent, id );
         traverseNode ( tagText, id );
     }
+
+    DOMElements tagGroups = XercesHelper::getChildElementsByTagName ( pnode, "group" );
+    for ( DOMElements::iterator pp=tagGroups.begin(); pp!=tagGroups.end(); ++pp ) {
+        DOMElement* tagGroup  = static_cast<DOMElement*>(*pp);
+        int groupid = groupnode_create ();
+
+        if ( XercesHelper::hasAttribute ( tagGroup, "name" ) )
+            groupnode_name ( groupid, (char*)XercesHelper::getAttribute ( tagGroup, "name" ) );
+
+        add_child ( parent, groupid );
+        traverseNode ( tagGroup, groupid );
+    }
+
+    DOMElements tagSwitchs = XercesHelper::getChildElementsByTagName ( pnode, "switch" );
+    for ( DOMElements::iterator pp=tagSwitchs.begin(); pp!=tagSwitchs.end(); ++pp ) {
+        DOMElement* tagSwitch  = static_cast<DOMElement*>(*pp);
+        int switchid = switchnode_create ();
+
+        if ( XercesHelper::hasAttribute ( tagSwitch, "isVisible" ) ) {
+            string tmp = (char*)XercesHelper::getAttribute ( tagSwitch, "isVisible" );
+            if ( tmp == "1" ) switchnode_visible ( switchid, true );
+            else if ( tmp == "0" ) switchnode_visible( switchid, false );
+        }
+
+        add_child ( parent, switchid );
+        traverseNode ( tagSwitch, switchid );
+    }
+
 }
 
 inline void LoadMesh::getShapeGenParas (int index, int& s1, int& s2, int& s3, int& s4, int& s5, int& s6, int level0Cnt, int level1Cnt, int level2Cnt, int level3Cnt, int level4Cnt, int level5Cnt )

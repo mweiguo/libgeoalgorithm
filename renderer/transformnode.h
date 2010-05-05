@@ -16,6 +16,10 @@ class TransformNode : public virtual SwitchNode
 {
 public:
     TransformNode () { _mat.normalize(); }
+    TransformNode ( const TransformNode& rhs ) : SwitchNode(rhs)
+    {
+	_mat = rhs._mat;
+    }
     void setTranslate ( const string& str )
     {
         float floattokens[3];

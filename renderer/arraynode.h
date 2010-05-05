@@ -8,6 +8,17 @@ class ArrayNode : public virtual SGNode
 {
 public:
     ArrayNode ();
+    ArrayNode ( const ArrayNode& rhs ) : SGNode(rhs)
+    {
+        _rowCnt        = rhs._rowCnt;
+        _columnCnt     = rhs._columnCnt;
+        for ( int i=0; i<6; i++ ) {
+            _levelHCnt[i] = rhs._levelHCnt[i];
+            _levelVCnt[i] = rhs._levelVCnt[i];
+            _marginx[i]   = rhs._marginx[i];
+            _marginy[i]   = rhs._marginy[i];
+        }
+    }
 
     void setRowCnt ( int cnt )    { _rowCnt = cnt; }
     void setColumnCnt ( int cnt ) { _columnCnt = cnt; }

@@ -15,6 +15,8 @@ public:
     virtual void apply ( MeshNode& node );
     virtual void apply ( FontNode& node );
     virtual void apply ( TextNode& node );
+    virtual void apply ( GroupNode& node );
+    virtual void apply ( SwitchNode& node );
 };
 
 
@@ -79,6 +81,18 @@ inline void ChildVisitor::apply ( FontNode& node )
 }
 
 inline void ChildVisitor::apply ( TextNode& node )
+{
+    for ( SGNode::iterator pp=node.begin(); pp!=node.end(); ++pp )
+        (*pp)->accept ( *this );
+}
+
+inline void ChildVisitor::apply ( GroupNode& node )
+{
+    for ( SGNode::iterator pp=node.begin(); pp!=node.end(); ++pp )
+        (*pp)->accept ( *this );
+}
+
+inline void ChildVisitor::apply ( SwitchNode& node )
 {
     for ( SGNode::iterator pp=node.begin(); pp!=node.end(); ++pp )
         (*pp)->accept ( *this );

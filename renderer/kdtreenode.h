@@ -8,6 +8,11 @@ template < class T>
 class KdTreeNodeT : public GroupNode
 {
 public:
+    KdTreeNodeT () {}
+    KdTreeNodeT ( const KdTreeNodeT& rhs ) : GroupNode (rhs)
+    {
+	_kdtree = rhs._kdtree;
+    }
     template<class Output >
     bool intersect ( const BBox& box, Output out )
     {

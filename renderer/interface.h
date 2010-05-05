@@ -1,6 +1,5 @@
 #ifndef _INTERFACE_H
 #define _INTERFACE_H
-#include "qviewport.h"
 // camera management
 int camera_create ( const char* name );
 void camera_translate ( int id, float tx, float ty, float tz );
@@ -62,10 +61,10 @@ int pickablegroup_create ();
 void pickablegroup_name ( int id, const char* name );
 // switchnode
 int switchnode_create ();
-void switchnode_props ( int id, bool isVisible );
+void switchnode_visible ( int id, bool isVisible );
 // groupnode
 int groupnode_create ();
-void groupnode_props ( int id, const char* name );
+void groupnode_name ( int id, const char* name );
 // text
 int text_create ();
 void text_string ( int id, const char* str );
@@ -92,8 +91,9 @@ void font_style ( int id, int style );
 #include "renderfunctor.h"
 #include "renderflow.h"
 #include "savemesh.h"
-//#include "loadmesh.h"
+#include "loadmesh.h"
 // camera management
+//#include "qviewport.h"
 
 inline int camera_create ( const char* name )
 {
@@ -182,18 +182,18 @@ inline void viewport_dirty ( int id )
 
 inline void viewport_add ( int id )
 {
-    QViewport::getInst().add_viewport( id );
+    //QViewport::getInst().add_viewport( id );
 }
 
 inline void viewport_delete ( int id )
 {
-    QViewport::getInst().remove_viewport( id );
+    //QViewport::getInst().remove_viewport( id );
 }
 
 inline void update ( int id )
 {
-    viewport_dirty ( id );
-    QViewport::getInst().update();
+    //viewport_dirty ( id );
+    //QViewport::getInst().update();
 }
 
 inline void add_child ( int parent, int child )
@@ -390,7 +390,7 @@ inline int switchnode_create ()
     return NodeMgr::getInst().addNode<SwitchNode> ();
 }
 
-inline void switchnode_props ( int id, bool isVisible )
+inline void switchnode_visible ( int id, bool isVisible )
 {
     SwitchNode* node = NodeMgr::getInst().getNodePtr<SwitchNode> (id);
     if ( node )
@@ -403,7 +403,7 @@ inline int groupnode_create ()
     return NodeMgr::getInst().addNode<GroupNode> ();
 }
 
-inline void groupnode_props ( int id, const char* nm )
+inline void groupnode_name ( int id, const char* nm )
 {
     GroupNode* node = NodeMgr::getInst().getNodePtr<GroupNode> (id);
     if ( node )
@@ -551,8 +551,8 @@ inline void font_style ( int id, int style )
 inline int mesh_load ( const char* file )
 {
     // load mesh
-/*     LoadMesh loadmesh ( file ); */
-/*     return loadmesh.root(); */
+    LoadMesh loadmesh ( file ); 
+    return loadmesh.root(); 
     return 0;
 }
 
@@ -565,9 +565,9 @@ inline void mesh_save ( const char* file, int meshid )
 
 inline void mesh_unload (int meshid)
 {
-/*     MeshNode* node = NodeMgr::getInst().getNodePtr<MeshNode>(meshid); */
-/*     if ( node ) */
-/*         UnloadMesh unloadmesh ( node ); */
+    MeshNode* node = NodeMgr::getInst().getNodePtr<MeshNode>(meshid);
+    if ( node )
+        UnloadMesh unloadmesh ( node );
 }
 
 inline void mesh_translate ( int id, float tx, float ty, float tz )

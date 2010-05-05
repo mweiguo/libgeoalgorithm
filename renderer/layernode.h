@@ -8,7 +8,8 @@
 class LayerNode : public GroupNode
 {
 public:
-    LayerNode ( const string& name="default" ) :GroupNode(name) {}
+    LayerNode ( const string& name="default" ) : GroupNode(name) {}
+    LayerNode ( const LayerNode& rhs ) : GroupNode ( rhs ) {}
     //LODNode* lod() { return dynamic_cast<LODNode*>(*begin()); }
     virtual void accept ( NodeVisitor& pvisitor ) const { pvisitor.apply ( *this ); }
     virtual void accept ( NodeVisitor& pvisitor ) { pvisitor.apply ( *this ); }

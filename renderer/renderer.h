@@ -34,11 +34,13 @@
 // functors
 #include "nodevisitor.h"
 #include "childvisitor.h"
+#include "parentvisitor.h"
 #include "renderfunctor.h"
 #include "sombuilder.h"
 #include "rendernodecollector.h"
 #include "nodevisible.h"
 #include "volumepicker.h"
+#include "copier.h"
 
 // io
 #include "loadmesh.h"

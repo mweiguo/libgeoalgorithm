@@ -10,6 +10,10 @@ class Rectangle : public DrawableNode
 {
 public:
     Rectangle ( T x=0, T y=0, T w=0, T h=0 ) { setRect(x,y,w,h); }
+    Rectangle ( const Rectangle& rhs ) : DrawableNode ( rhs )
+    { 
+	setRect ( rhs._x, rhs._y, rhs._w, rhs._h );
+    }
     void setRect ( T x, T y, T w, T h ) {
         _x = x;
         _y = y;

@@ -14,6 +14,7 @@ class DrawableNode : public SGNode
     //  virtual void render (QPainter& painter) = 0;
 public:
     DrawableNode() : _bRender(true) {}
+    DrawableNode( const DrawableNode& rhs ) : _bb(rhs._bb), _bRender(rhs._bRender) {}
     const BBox& getBBox () const { return _bb; }
     virtual void accept ( NodeVisitor& pvisitor ) const { pvisitor.apply ( *this ); }
     virtual void accept ( NodeVisitor& pvisitor ) { pvisitor.apply ( *this ); }

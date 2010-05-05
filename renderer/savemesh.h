@@ -19,6 +19,8 @@ public:
     virtual void apply ( PickableGroup& node );
     virtual void apply ( KdTreeNode& node );
     virtual void apply ( MeshNode& node );
+    virtual void apply ( GroupNode& node );
+    virtual void apply ( SwitchNode& node );
 private:
     stringstream _xmlContent;
 };
@@ -126,6 +128,20 @@ inline void SaveMesh::apply ( MeshNode& node )
     _xmlContent << "<mesh>";
     ChildVisitor::apply ( node );
     _xmlContent << "</mesh>";
+}
+
+inline void SaveMesh::apply ( GroupNode& node )
+{
+    _xmlContent << "<group name='" << node.name() << "'>";
+    ChildVisitor::apply ( node );
+    _xmlContent << "</group>";
+}
+
+inline void SaveMesh::apply ( SwitchNode& node )
+{
+    _xmlContent << "<switch isVisible='" << (node.isVisible() ? 1 : 0) << "'>";
+    ChildVisitor::apply ( node );
+    _xmlContent << "</switch>";
 }
 
 #endif

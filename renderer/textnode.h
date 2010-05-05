@@ -34,7 +34,14 @@ public:
 	};
     TextNode () : _fontnode(0) {}
     TextNode ( const string& content ) : _content(content), _fontnode(0) {}
-
+    TextNode ( const TextNode& rhs ) : DrawableNode ( rhs )
+    {
+	_content      = _content;
+	_anchor       = _anchor;
+	_alignFlag    = _alignFlag;
+	_fontnode     = _fontnode;
+	_anchorPoint  = _anchorPoint;
+    }
     void text ( const string& content )
     {
         _content = content; 

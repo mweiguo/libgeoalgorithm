@@ -9,12 +9,16 @@ class SwitchNode : public virtual SGNode
 {
 public:
     SwitchNode () {_isVisible = true;}
+    SwitchNode ( const SwitchNode& rhs )
+    {
+	_isVisible = rhs._isVisible;
+    }
     bool isVisible() { return _isVisible; }
     void setVisible(bool isVisible) { _isVisible = isVisible; }
     virtual void accept ( NodeVisitor& pvisitor ) const { pvisitor.apply ( *this ); }
     virtual void accept ( NodeVisitor& pvisitor ) { pvisitor.apply ( *this ); }
     virtual ~SwitchNode () {}
-private:
+protected:
     bool _isVisible;
 };
 

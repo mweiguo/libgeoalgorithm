@@ -6,7 +6,8 @@
 #include "rendernodecollector.h"
 #include <vector>
 #include <time.h>
-
+#include <algorithm>
+using namespace std;
 
 class LODNode : public virtual SGNode
 {
@@ -14,6 +15,10 @@ public:
     typedef vector<float>::iterator diterator;
     typedef vector<float>::const_iterator const_diterator;
     LODNode () {}
+    LODNode ( const LODNode& rhs ) : SGNode(rhs)
+    {
+	copy ( levelDelimiters.begin(), levelDelimiters.end(), back_inserter(levelDelimiters));
+    }
     // in proj mode, v is dist
     // in ortho mode, v is scale
     SGNode* selectPresentation ( float v ) 

@@ -18,6 +18,8 @@ class KdTreeNodeT;
 class MeshNode;
 class FontNode;
 class TextNode;
+class GroupNode;
+class SwitchNode;
 typedef KdTreeNodeT<DrawableNode*> KdTreeNode;
 
 class NodeVisitor 
@@ -34,6 +36,8 @@ public:
     virtual void apply ( const MeshNode& /*node*/ ) {}
     virtual void apply ( const FontNode& node ) {}
     virtual void apply ( const TextNode& node ) {}
+    virtual void apply ( const GroupNode& node ) {}
+    virtual void apply ( const SwitchNode& node ) {}
     virtual void apply ( SGNode& /*node*/ ) {}
     virtual void apply ( LayerNode& /*node*/ ) {}
     virtual void apply ( Rectanglef& /*node*/ ) {}
@@ -45,6 +49,8 @@ public:
     virtual void apply ( MeshNode& /*node*/ ) {}
     virtual void apply ( FontNode& node ) {}
     virtual void apply ( TextNode& node ) {}
+    virtual void apply ( GroupNode& node ) {}
+    virtual void apply ( SwitchNode& node ) {}
 };
 
 

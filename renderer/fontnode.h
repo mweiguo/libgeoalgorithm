@@ -10,10 +10,16 @@ class FontNode : public SGNode
 {
 public:
     FontNode ( const string& family="Courier New", int pointSize=12, bool isItalic=false ) : 
-      _family(family), _pointSize(pointSize), _isItalic(isItalic)
-      {
-      }
-
+	_family(family), _pointSize(pointSize), _isItalic(isItalic)
+    {
+    }
+    FontNode ( const FontNode& rhs ) : SGNode(rhs)
+    {
+	_family     = rhs._family;
+	_pointSize  = rhs._pointSize;
+	_isItalic   = rhs._isItalic;
+	_color      = rhs._color;
+    }
     // set font interface
     void setFont ( const string& family="Courier New", int pointSize=12, bool isItalic=false );
     void family ( const string& f ) { _family = f; }

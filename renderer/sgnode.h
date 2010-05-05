@@ -17,6 +17,11 @@ public:
     //typedef list<SGNode*>::const_iterator const_iterator;
 
     SGNode() {_parent=NULL; }
+    SGNode( const SGNode& rhs )
+    {
+	copy ( rhs.begin(), rhs.end(), back_inserter(*this) );
+	_parent = rhs._parent;
+    }
     // nodes relation operations
     void addChild ( SGNode* pNode ) { 
         pNode->_setParent ( this );
@@ -37,10 +42,12 @@ public:
     SGNode* getParentNode () { return _parent; }
     void setParentNode (SGNode* node) {
         if ( node ) {
-            _parent->_removeChild (this);
+            if ( _parent )
+                _parent->_removeChild (this);
             node->addChild ( this );
         } else {
-            _parent->_removeChild (this);
+            if ( _parent )
+                _parent->_removeChild (this);
             _setParent ( node );
         }
     }
@@ -63,7 +70,7 @@ private:
     void _addChild ( SGNode* p ) { push_back (p); }
     // void _removeParent ( SGNode* p ) { _parent.removeChild (p); }
     void _setParent ( SGNode* p ) { _parent=p; }
-private:
+protected:
     SGNode* _parent;
     //list<SGNode*> _children;
 };
