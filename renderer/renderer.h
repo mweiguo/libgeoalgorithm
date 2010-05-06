@@ -44,7 +44,6 @@
 
 // io
 #include "loadmesh.h"
-#include "loadnodes.h"
 #include "savemesh.h"
 #include "savepickable.h"
 

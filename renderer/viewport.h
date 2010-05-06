@@ -27,12 +27,14 @@ public:
     {
         _dirty = true;
         //attachcamera ( CameraMgr::getInst().getDefaultCamera() );
-        resetVPMatrix ();
+        recalcVPMatrix ();
     }
     void position ( int orgx, int orgy ) { _pos.x(orgx); _pos.y(orgy); }
     const vec2i& size() const { return _size; }
-    void size ( int w, int h ) { _size.w(w); _size.h(h); dirty(true); resetVPMatrix(); }
-    const mat4f& vpmatrix () const { return _vpmatrix; }
+    void size ( int w, int h ) { _size.w(w); _size.h(h); dirty(true); recalcVPMatrix(); }
+    const mat4f& vpmatrix () const { 
+        return _vpmatrix; 
+    }
     void update () 
     {
         CameraOrtho* cam = camera();
@@ -47,13 +49,13 @@ public:
     virtual ~Viewport () {}
 private:
     // reset view port matrix
-    void resetVPMatrix () 
+    void recalcVPMatrix () 
     {
         _vpmatrix.normalize();
         _vpmatrix.sx ( _size.w() / 2.f );
         _vpmatrix.sy ( _size.h() / -2.f );
-        _vpmatrix.dx ( _size.w() / 2.f );
-        _vpmatrix.dy ( _size.h() / 2.f );
+        _vpmatrix.dx ( _pos.x() );
+        _vpmatrix.dy ( _pos.y() );
     }
 private:
     string _name;

@@ -30,8 +30,8 @@ public:
     virtual void apply ( TextNode& /*node*/ );
     void operator () ( ArrayNode& node )
     {
-        vector<SGNode*> tmpChildren;
-        copy ( node.begin(), node.end(), back_inserter(tmpChildren) );
+        //vector<SGNode*> tmpChildren;
+        //copy ( node.begin(), node.end(), back_inserter(tmpChildren) );
 
         GroupNode* group = new GroupNode();
         _curparent->addChild ( group );
@@ -56,8 +56,8 @@ public:
             }
         }
 
-        for ( vector<SGNode*>::iterator pp=tmpChildren.begin(); pp!=tmpChildren.end(); ++pp )
-            (*pp)->setParentNode ( NULL );
+        //for ( vector<SGNode*>::iterator pp=tmpChildren.begin(); pp!=tmpChildren.end(); ++pp )
+        //    (*pp)->setParentNode ( NULL );
     }
     vector<KdTreeNode*>::iterator kdbegin() { return _kdtreenodes.begin(); }
     vector<KdTreeNode*>::iterator kdend() { return _kdtreenodes.end(); }
@@ -113,8 +113,10 @@ inline void ArrayExpander::apply ( TransformNode& node )
 
 inline void ArrayExpander::apply ( ArrayNode& node )
 {
-    ArrayExpander expander( node.getParentNode() );
+    SGNode* oldparent = _curparent;
+    ArrayExpander expander( _curparent );
     expander( node );
+    _curparent = oldparent;
 }
 
 inline void ArrayExpander::apply ( LODNode& node )

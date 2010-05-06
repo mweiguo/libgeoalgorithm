@@ -20,6 +20,8 @@ public:
     virtual void apply ( MeshNode& node );
     virtual void apply ( FontNode& node );
     virtual void apply ( TextNode& node );
+    virtual void apply ( GroupNode& node );
+    virtual void apply ( SwitchNode& node );
     void operator() ( SGNode* node )
     {
         _dump.str("");
@@ -134,5 +136,22 @@ inline void NodeDumper::apply ( TextNode& node )
     _ident.erase ( 0, 2 );
 }
 
+inline void NodeDumper::apply ( GroupNode& node )
+{
+    stringstream ss;
+    _ident.insert ( 0, "  " );
+    _dump << _ident << "GroupNode name=" << node.name() << endl;
+    ChildVisitor::apply ( node );
+    _ident.erase ( 0, 2 );
+}
+
+inline void NodeDumper::apply ( SwitchNode& node )
+{
+    stringstream ss;
+    _ident.insert ( 0, "  " );
+    _dump << _ident << "SwitchNode isVisible=" << node.isVisible() << endl;
+    ChildVisitor::apply ( node );
+    _ident.erase ( 0, 2 );
+}
 
 #endif

@@ -21,7 +21,7 @@ public:
 
     void operator() ( int camid, const BBox& box, SGNode* node ) 
     {
-        static Rectanglef rect;
+	//        static Rectanglef rect;
         typedef vector<SpatialObjectMgr*> SpatialObjectMgrs;
         RenderListMgr::iterator pp = find ( camid );
         RenderList* renderlist=0;
@@ -39,16 +39,16 @@ public:
         //                box.max().x(), box.max().y(), box.max().z() );
         //            qDebug ( "%s", (*pp)->intersectstatistic ().c_str() );
         //#endif
-        //// insert scene bbox to renderlist
-        //CameraOrtho* cam = CameraMgr::getInst()[camid];
-        //if ( cam )
-        //{
-        //    BBox box = cam->viewvolume();
-        //    rect.setRect ( box.min().x(), box.min().y(), 
-        //        box.max().x() - box.min().x(),
-        //        box.max().y() - box.min().y() );
-        //    renderlist->push_back ( &rect );
-        //}
+	//        insert scene bbox to renderlist
+	CameraOrtho* cam = NodeMgr::getInst().getNodePtr<CameraOrtho>(camid);
+        if ( cam ) {
+	    BBox box = cam->viewvolume();
+	    Rectanglef *rect = new Rectanglef();
+	    rect->setRect ( box.min().x(), box.min().y(), 
+			   box.max().x() - box.min().x(),
+			   box.max().y() - box.min().y() );
+	    renderlist->push_back ( rect );
+	}
     }
 private:
     Culling () {}

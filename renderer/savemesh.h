@@ -10,7 +10,6 @@ class SaveMesh : public ChildVisitor
 {
 public:
     SaveMesh( const string& filename, SGNode* node );
-    virtual void apply ( SGNode& node );
     virtual void apply ( LayerNode& node );
     virtual void apply ( Rectanglef& node );
     virtual void apply ( TransformNode& node );
@@ -29,18 +28,13 @@ inline SaveMesh::SaveMesh( const string& filename, SGNode* node )
 {
     _xmlContent.str("");
     _xmlContent << "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" << endl;
+    _xmlContent << "<chiptemplate>";
     node->accept ( *this );
+    _xmlContent << "</chiptemplate>" << endl;
     ofstream out;
     out.open ( filename.c_str() );
     out << _xmlContent.str();
     out.close();
-}
-
-inline void SaveMesh::apply ( SGNode& node )
-{
-    _xmlContent << "<chiptemplate>";
-    ChildVisitor::apply ( node );
-    _xmlContent << "</chiptemplate>";
 }
 
 inline void SaveMesh::apply ( LayerNode& node )

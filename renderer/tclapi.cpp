@@ -908,7 +908,7 @@ int tcl_switchnode_props ( ClientData clientData, Tcl_Interp* interp, int objc, 
 	int id, isvisible;
 	Tcl_GetIntFromObj ( interp, objv[1], &id ); 
 	Tcl_GetBooleanFromObj ( interp, objv[2], &isvisible ); 
-	switchnode_props ( id, isvisible );
+	switchnode_visible ( id, isvisible );
 	return TCL_OK;
     } catch ( std::exception& e ) {
 //	Tcl_NewStringObj ( (const char*)(e.what()), e.what().size() );
@@ -950,7 +950,7 @@ int tcl_groupnode_props ( ClientData clientData, Tcl_Interp* interp, int objc, T
 	int id, len;
 	Tcl_GetIntFromObj ( interp, objv[1], &id ); 
 	const char* name = Tcl_GetStringFromObj ( objv[2], &len);
-	groupnode_props ( id, name );
+	groupnode_name ( id, name );
 	return TCL_OK;
     } catch ( std::exception& e ) {
 //	Tcl_NewStringObj ( (const char*)(e.what()), e.what().size() );
