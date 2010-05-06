@@ -43,6 +43,7 @@ protected:
 	    RenderOption opt;
 	    opt.painter = &painter;
 	    RenderFlow renderflow ( *(*pp), opt );
+	    (*pp)->update();
 	}
     }
 
