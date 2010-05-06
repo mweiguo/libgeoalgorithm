@@ -2,10 +2,13 @@
 #define _QTRENDER_FUNCTOR_H_
 
 #include <QPainter>
+
 #include "rectitem.h"
 #include "fontnode.h"
 #include "textnode.h"
 #include "mat4.h"
+#include "vec2.h"
+#include "vec4.h"
 
 struct RenderOption
 {

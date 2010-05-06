@@ -1,7 +1,7 @@
 #ifndef _NODEVISITOR_NODE_H_
 #define _NODEVISITOR_NODE_H_
 
-
+//#include "nodes.h"
 class SGNode;
 
 template < class T >

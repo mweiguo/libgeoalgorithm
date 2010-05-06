@@ -93,14 +93,14 @@ void font_style ( int id, int style );
 #include "renderfunctor.h"
 #include "renderflow.h"
 #include "savemesh.h"
-#include "loadmesh.h"
+//#include "loadmesh.h"
 #include "qviewport.h"
 // camera management
-//#include "qviewport.h"
 
 inline void renderer_init ()
 {
     QViewport::getInst().show();
+//    QViewport::getInst().show();
 }
 
 inline int camera_create ( const char* name )
@@ -558,15 +558,15 @@ inline void font_style ( int id, int style )
 //        |- mesh
 inline int mesh_load ( const char* file )
 {
-    // load mesh
-    NodeMgr::getInst();
-    LoadMesh loadmesh ( file, true, true );
-    int seed = SeedGenerator::getInst().seed();
-    NodeMgr::getInst()[seed] = loadmesh.root();
-    add_child ( 0, seed );
-    return seed;
+//     // load mesh
+//     NodeMgr::getInst();
+//     LoadMesh loadmesh ( file, true, true );
+//     int seed = SeedGenerator::getInst().seed();
+//     NodeMgr::getInst()[seed] = loadmesh.root();
+//     add_child ( 0, seed );
+//     return seed;
     //return loadmesh.root(); 
-    //return 0;
+    return 0;
 }
 
 inline void mesh_save ( const char* file, int meshid )
@@ -578,13 +578,13 @@ inline void mesh_save ( const char* file, int meshid )
 
 inline void mesh_unload (int meshid)
 {
-    MeshNode* node = NodeMgr::getInst().getNodePtr<MeshNode>(meshid);
-    if ( node )
-    {
-        node->setParentNode ( NULL );
-        UnloadMesh unloadmesh ( node );
-        NodeMgr::getInst().erase ( meshid );
-    }
+//     MeshNode* node = NodeMgr::getInst().getNodePtr<MeshNode>(meshid);
+//     if ( node )
+//     {
+//         node->setParentNode ( NULL );
+//         UnloadMesh unloadmesh ( node );
+//         NodeMgr::getInst().erase ( meshid );
+//     }
 }
 
 inline void mesh_translate ( int id, float tx, float ty, float tz )

@@ -4,10 +4,12 @@
 #include <QWidget>
 #include <QResizeEvent>
 #include <QPaintEvent>
-
+#include <QPainter>
 #include <list>
-
-#include "interface.h"
+#include "renderfunctor.h"
+#include "renderflow.h"
+#include "nodemgr.h"
+//#include "interface.h"
 using namespace std;
 
 class QViewport : public QWidget
@@ -20,20 +22,28 @@ public:
     }
     void add_viewport ( int id )
     {
-	_viewports.push_back ( id );
+	Viewport* p = NodeMgr::getInst().getNodePtr<Viewport>(id);
+	if ( p )
+	    _viewports.push_back ( p );
     }
     void remove_viewport ( int id )
     {
-	_viewports.remove ( id );
+	Viewport* p = NodeMgr::getInst().getNodePtr<Viewport>(id);
+	if ( p )
+	    _viewports.remove ( p );
     }
 protected:
     //    virtual void resizeEvent ( QResizeEvent* event )
     virtual void paintEvent ( QPaintEvent* event )
     {
 	QPainter painter(this);    
-	list<int>::iterator pp, end=_viewports.end();
+	list<Viewport*>::iterator pp, end=_viewports.end();
 	for ( pp=_viewports.begin(); pp!=end; ++pp )
-	    viewport_update ( *pp, painter );
+	{
+	    RenderOption opt;
+	    opt.painter = &painter;
+	    RenderFlow renderflow ( *(*pp), opt );
+	}
     }
 
 private:
@@ -43,7 +53,7 @@ private:
 	setWindowTitle ( title );
     }
 
-    list<int> _viewports;
+    list<Viewport*> _viewports;
     int _x, _y;
 //    int _viewport, _camid;
 };

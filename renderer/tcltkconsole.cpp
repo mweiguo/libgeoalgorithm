@@ -1,6 +1,7 @@
-#include "tcltkconsole.h"
 #include <locale.h>
 #include "tclapi.h"
+#include "tcltkconsole.h"
+
 void WishPanic( CONST char *format, ...)
 {
     va_list argList;
@@ -8,7 +9,6 @@ void WishPanic( CONST char *format, ...)
 
     va_start(argList, format);
     vsprintf(buf, format, argList);
-
 }
 
 int Tcl_AppInit( Tcl_Interp *interp)

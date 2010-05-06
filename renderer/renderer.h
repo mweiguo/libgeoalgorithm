@@ -38,7 +38,7 @@
 #include "renderfunctor.h"
 #include "sombuilder.h"
 #include "rendernodecollector.h"
-#include "nodevisible.h"
+//#include "nodevisible.h"
 #include "volumepicker.h"
 #include "copier.h"
 

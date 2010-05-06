@@ -12,7 +12,7 @@
 #include "mat4.h"
 #include "renderfunctor.h"
 #include "kdtree.h"
-#include "nodevisible.h"
+//#include "nodevisible.h"
 #include "culling.h"
 #include "nodemgr.h"
 

@@ -1,6 +1,11 @@
 #ifndef _CHILDVISITOR_H_
 #define _CHILDVISITOR_H_
 
+#include "nodevisitor.h"
+#include "pickablegroup.h"
+#include "kdtreenode.h"
+#include "meshnode.h"
+
 class ChildVisitor : public NodeVisitor
 {
 public:

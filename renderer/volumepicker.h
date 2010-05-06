@@ -3,6 +3,7 @@
 
 #include "childvisitor.h"
 #include "kdtreenode.h"
+#include "pickablegroup.h"
 
 template <class Output>
 class VolumePicker : public ChildVisitor
