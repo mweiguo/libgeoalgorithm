@@ -54,8 +54,8 @@ private:
         _vpmatrix.normalize();
         _vpmatrix.sx ( _size.w() / 2.f );
         _vpmatrix.sy ( _size.h() / -2.f );
-        _vpmatrix.dx ( _pos.x() );
-        _vpmatrix.dy ( _pos.y() );
+        _vpmatrix.dx ( _size.w() / 2.f );
+        _vpmatrix.dy ( _size.h() / 2.f );
     }
 private:
     string _name;
